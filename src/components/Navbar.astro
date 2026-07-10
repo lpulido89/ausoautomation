@@ -1,0 +1,121 @@
+<nav class="navbar">
+
+    <div class="container nav-content">
+
+        <a href="/" class="logo">
+
+            <img src="/images/logo.png" alt="AUSO Logo">
+
+        </a>
+
+<button class="menu-toggle" aria-label="Open menu">
+
+    ☰
+
+</button>
+
+<ul class="nav-links">
+
+    <li><a href="#top">Home</a></li>
+
+    <li><a href="#services">Services</a></li>
+
+    <li><a href="#projects">Projects</a></li>
+
+    <li><a href="#training">Training</a></li>
+
+    <li><a href="#about">Why AUSO</a></li>
+
+</ul>
+
+<a href="#contact" class="btn btn-outline">
+
+    Contact Us
+
+</a>
+
+    </div>
+
+</nav>
+
+
+<script is:inline>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const navbar = document.querySelector(".navbar");
+    const sections = document.querySelectorAll("section[id]");
+    const links = document.querySelectorAll(".nav-links a");
+
+    const menuButton = document.querySelector(".menu-toggle");
+    const menu = document.querySelector(".nav-links");
+
+    // Navbar al hacer scroll
+    window.addEventListener("scroll", () => {
+
+        navbar.classList.toggle("scrolled", window.scrollY > 80);
+
+    });
+
+    // Menú móvil
+    menuButton.addEventListener("click", () => {
+
+        menu.classList.toggle("open");
+
+        menuButton.textContent =
+            menu.classList.contains("open") ? "✕" : "☰";
+
+    });
+
+    // Cerrar menú al pulsar un enlace
+    links.forEach(link => {
+
+        link.addEventListener("click", () => {
+
+            menu.classList.remove("open");
+            menuButton.textContent = "☰";
+
+        });
+
+    });
+
+    // Link activo
+    const observer = new IntersectionObserver(
+
+        (entries) => {
+
+            entries.forEach((entry) => {
+
+                if (!entry.isIntersecting) return;
+
+                const id = entry.target.id;
+
+                links.forEach((link) => {
+
+                    link.classList.remove("active");
+
+                    if (link.getAttribute("href") === "#" + id) {
+
+                        link.classList.add("active");
+
+                    }
+
+                });
+
+            });
+
+        },
+
+        {
+
+            threshold:0.45
+
+        }
+
+    );
+
+    sections.forEach(section => observer.observe(section));
+
+});
+
+</script>

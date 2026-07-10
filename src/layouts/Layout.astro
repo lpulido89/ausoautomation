@@ -1,0 +1,63 @@
+---
+import "../styles/global.css";
+import "../styles/navbar.css";
+import "../styles/hero.css";
+import "../styles/services.css";
+import "../styles/projects.css";
+import "../styles/technologies.css";
+import "../styles/about.css";
+import "../styles/training.css";
+import "../styles/contact.css";
+import "../styles/footer.css";
+
+interface Props {
+    title?: string;
+}
+
+const { title = "AUSO | Automation Solutions" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8" />
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>{title}</title>
+
+    <meta
+        name="description"
+        content="Industrial Automation Solutions specializing in Siemens PLCs, Motion Control, Drives, CNC and Technical Training."
+    />
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+</head>
+
+<body>
+
+    <slot />
+
+</body>
+
+</html>
