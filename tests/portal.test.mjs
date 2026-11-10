@@ -27,7 +27,7 @@ test('admin can create courses, upload and assign materials; each client can onl
       return { bind: (...args) => ({
         first: async () => statement.get(...args) ?? null,
         all: async () => ({results:statement.all(...args)}),
-        run: async () => statement.run(...args),
+        run: async () => ({ meta: statement.run(...args) }),
       }) };
     },
   };
@@ -91,4 +91,13 @@ test('admin can create courses, upload and assign materials; each client can onl
   }
   assert.equal((await send({action:'revoke',course:plc.course,email:alice})).status, 200);
   assert.equal((await download({env,data:{clientEmail:alice},params:{id:plc.id}})).status, 404);
+  const group = { action:'assign-batch', courses:[plc.course], emails:[alice, bob, bob.toUpperCase()] };
+  assert.deepEqual(await (await send(group)).json(), { added:2 });
+  assert.deepEqual(await (await send(group)).json(), { added:0 });
+  const client = { action:'assign-batch', courses:[plc.course,hmi.course], emails:[alice] };
+  assert.deepEqual(await (await send(client)).json(), { added:1 });
+  assert.equal((await send({ ...group, emails:['new@example.com','mal escrito'] })).status, 400);
+  assert.deepEqual((await (await courses({env,data:{clientEmail:'new@example.com'}})).json()).courses, []);
+  const list = await (await courses({env,data:{clientEmail:alice}})).json();
+  assert.deepEqual(list.courses.map(item => item.title), ['HMI','PLC']);
 });

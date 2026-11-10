@@ -21,10 +21,22 @@
         <label>Archivo (máx. 50 MB) <input name="file" type="file" required /></label>
         <button>Subir archivo</button>
       </form>
-      <form id="assign">
-        <label>Curso <select name="course" required></select></label>
+      <form id="assign-client">
+        <h2>Por cliente</h2>
         <label>Correo del cliente <input name="email" type="email" required maxlength="254" /></label>
-        <button>Dar acceso</button>
+        <fieldset>
+          <legend>Cursos que tomó</legend>
+          <div id="course-checklist"></div>
+        </fieldset>
+        <button>Dar acceso a los cursos marcados</button>
+      </form>
+      <form id="assign-group">
+        <h2>Por grupo</h2>
+        <label>Curso <select name="course" required></select></label>
+        <label>Correos del grupo (hasta 100)
+          <textarea name="emails" rows="4" required placeholder="Pega los correos separados por saltos de línea, comas o punto y coma"></textarea>
+        </label>
+        <button>Dar acceso al grupo</button>
       </form>
       <section><h2>Archivos subidos</h2><ul id="files"></ul></section>
       <section><h2>Accesos asignados</h2><ul id="access"></ul></section>
@@ -33,6 +45,7 @@
       const api = '/api/admin/materials';
       const status = document.querySelector('#status')!;
       const selects = document.querySelectorAll<HTMLSelectElement>('select[name=course]');
+      const checklist = document.querySelector('#course-checklist')!;
       const files = document.querySelector('#files')!;
       const access = document.querySelector('#access')!;
       let busy = false;
@@ -42,7 +55,7 @@
         if (!response.ok || !result) throw new Error(result?.error || 'No se pudo completar la operación.');
         return result;
       }
-      function send(action: string, values: Record<string, string>) {
+      function send(action: string, values: Record<string, string | string[]>) {
         return request(api, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ action, ...values }) });
       }
       async function load() {
@@ -53,6 +66,19 @@
           select.replaceChildren(new Option('Selecciona un curso', ''));
           for (const [id, title] of titles) select.add(new Option(title, id));
           select.value = titles.has(previous) ? previous : '';
+        }
+        const checked = new Set(Array.from(checklist.querySelectorAll<HTMLInputElement>('input:checked'), input => input.value));
+        checklist.replaceChildren();
+        if (!titles.size) checklist.textContent = 'Crea un curso para poder asignarlo.';
+        for (const [id, title] of titles) {
+          const label = document.createElement('label');
+          const input = document.createElement('input');
+          input.type = 'checkbox';
+          input.name = 'courses';
+          input.value = id;
+          input.checked = checked.has(id);
+          label.append(input, ' ', title);
+          checklist.append(label);
         }
         files.replaceChildren();
         for (const file of result.files) {
@@ -70,30 +96,42 @@
           access.append(li);
         }
       }
-      async function run(action: () => Promise<unknown>, message: string) {
+      async function run(action: () => Promise<unknown>, message: string | ((result: any) => string)) {
         if (busy) return;
         busy = true;
         status.textContent = 'Procesando…';
         try {
-          await action();
+          const result = await action();
           await load();
-          status.textContent = message;
+          status.textContent = typeof message === 'function' ? message(result) : message;
         } catch (error) {
           status.textContent = error instanceof Error ? error.message : 'Ocurrió un error.';
         } finally { busy = false; }
       }
-      function onSubmit(id: string, action: (data: FormData) => Promise<unknown>, message: string) {
+      function onSubmit(id: string, action: (data: FormData) => Promise<unknown>, message: string | ((result: any) => string)) {
         document.querySelector<HTMLFormElement>('#' + id)?.addEventListener('submit', event => {
           event.preventDefault();
           const form = event.currentTarget as HTMLFormElement;
           void run(async () => {
-            await action(new FormData(form));
+            const result = await action(new FormData(form));
             form.reset();
+            return result;
           }, message);
         });
       }
       onSubmit('course', data => send('course', { title:String(data.get('title')) }), 'Curso creado.');
-      onSubmit('assign', data => send('assign', { email:String(data.get('email')), course:String(data.get('course')) }), 'Acceso asignado.');
+      const batchMessage = ({added}: {added: number}) => added === 0 ? 'Esos accesos ya estaban asignados.' :
+        added === 1 ? 'Se agregó 1 acceso.' : `Se agregaron ${added} accesos.`;
+      onSubmit('assign-client', data => {
+        const courses = data.getAll('courses').map(String);
+        if (!courses.length) throw new Error('Marca al menos un curso.');
+        return send('assign-batch', { emails:[String(data.get('email'))], courses });
+      }, batchMessage);
+      onSubmit('assign-group', data => {
+        const emails = String(data.get('emails')).split(/[\s,;]+/).filter(Boolean);
+        if (!emails.length) throw new Error('Pega al menos un correo.');
+        return send('assign-batch', { emails, courses:[String(data.get('course'))] });
+      }, batchMessage);
       onSubmit('upload', async data => {
         const file = data.get('file');
         if (!(file instanceof File) || !file.size || file.size > 50 * 1024 * 1024) throw new Error('Elige un archivo de hasta 50 MB.');
@@ -108,7 +146,9 @@
       a { color:#ff8996; }
       form, section { background:#191d24; padding:1.25rem; border:1px solid #363b44; border-radius:12px; margin-top:1rem; }
       label { display:block; margin-bottom:.75rem; }
-      input, select { display:block; box-sizing:border-box; width:100%; padding:.55rem; margin-top:.25rem; }
+      input, select, textarea { display:block; box-sizing:border-box; width:100%; padding:.55rem; margin-top:.25rem; }
+      fieldset { border:1px solid #363b44; margin:0 0 .75rem; }
+      input[type=checkbox] { display:inline; width:auto; margin-right:.4rem; accent-color:#af2336; }
       button { background:#af2336; color:white; padding:.55rem .85rem; border:0; border-radius:5px; cursor:pointer; }
       li { padding:.35rem 0; overflow-wrap:anywhere; }
     </style>

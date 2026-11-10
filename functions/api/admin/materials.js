@@ -47,6 +47,29 @@ export async function onRequestPost({ request, env }) {
     await db.prepare('INSERT INTO courses (id, title) VALUES (?, ?)').bind(id, title).run();
     return json({ id }, 201);
   }
+  if (body?.action === 'assign-batch') {
+    if (!Array.isArray(body.emails) || !Array.isArray(body.courses) ||
+        !body.emails.length || !body.courses.length ||
+        body.emails.length > 100 || body.courses.length > 100 ||
+        (body.emails.length > 1 && body.courses.length > 1)) {
+      return error('Selecciona un cliente con varios cursos o un curso con hasta 100 clientes.', 400);
+    }
+    const emails = [...new Set(body.emails.map(value => typeof value === 'string' ? value.trim().toLowerCase() : ''))];
+    const courses = [...new Set(body.courses)];
+    if (emails.some(email => email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+      return error('Revisa la lista: hay un correo inválido. No se guardó ningún acceso.', 400);
+    }
+    if (courses.some(id => typeof id !== 'string' || !id || id.length > 100)) return error('Selecciona cursos válidos.', 400);
+    const courseList = JSON.stringify(courses);
+    const { total } = await db.prepare('SELECT COUNT(*) AS total FROM courses WHERE id IN (SELECT value FROM json_each(?))')
+      .bind(courseList).first();
+    if (total !== courses.length) return error('Uno de los cursos no existe. No se guardó ningún acceso.', 404);
+    const result = await db.prepare(`
+      INSERT OR IGNORE INTO enrollments (email, course_id)
+      SELECT emails.value, courses.value FROM json_each(?) emails CROSS JOIN json_each(?) courses
+    `).bind(JSON.stringify(emails), courseList).run();
+    return json({ added: result.meta.changes });
+  }
   if (body?.action !== 'assign' && body?.action !== 'revoke') return error('Acción inválida.', 400);
   const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
   if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || typeof body.course !== 'string') {
