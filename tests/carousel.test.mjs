@@ -38,7 +38,7 @@ test('empty public carousel returns no slides', async () => {
 
 test('upload image, update metadata/position, remove and read image', async () => {
   const bucket = createBucket();
-  const env = { AUSO_MEDIA:bucket };
+  const env = { auso_media:bucket };
   const upload = new FormData();
   upload.append('title', 'AUSO motion control');
   upload.append('description', 'Siemens drives');

@@ -1,3 +1,5 @@
+import { mediaBucket } from '../../_media.js';
+
 const MANIFEST = 'carousel/manifest.json';
 const MAX_SLIDES = 24;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
@@ -17,7 +19,7 @@ function text(value, max) {
 }
 
 async function getSlides(env) {
-  const item = await env.AUSO_MEDIA.get(MANIFEST);
+  const item = await mediaBucket(env).get(MANIFEST);
   if (!item) return { slides: [], etag: null };
   const data = await item.json();
   if (!Array.isArray(data.slides)) throw new Error('Invalid manifest');
@@ -25,7 +27,7 @@ async function getSlides(env) {
 }
 
 async function saveSlides(env, slides, etag) {
-  const result = await env.AUSO_MEDIA.put(MANIFEST, JSON.stringify({ version: 1, slides }), {
+  const result = await mediaBucket(env).put(MANIFEST, JSON.stringify({ version: 1, slides }), {
     onlyIf: etag ? new Headers({ 'If-Match': etag }) : new Headers({ 'If-None-Match': '*' }),
     httpMetadata: { contentType: 'application/json' },
   });
@@ -46,7 +48,7 @@ function hasAt(bytes, values, offset) {
 }
 
 export async function onRequestGet({ env }) {
-  if (!env.AUSO_MEDIA) return error('R2 is not configured', 503);
+  if (!mediaBucket(env)) return error('R2 is not configured', 503);
   try {
     const { slides, etag } = await getSlides(env);
     return Response.json({ slides, etag }, { headers: { 'Cache-Control': 'no-store' } });
@@ -54,7 +56,7 @@ export async function onRequestGet({ env }) {
 }
 
 export async function onRequestPost({ request, env }) {
-  if (!env.AUSO_MEDIA) return error('R2 is not configured', 503);
+  if (!mediaBucket(env)) return error('R2 is not configured', 503);
   if (Number(request.headers.get('content-length') || 0) > MAX_IMAGE_BYTES + 30000) return error('Image exceeds 8 MB', 413);
   let data;
   try { data = await request.formData(); } catch { return error('Invalid upload form'); }
@@ -69,7 +71,7 @@ export async function onRequestPost({ request, env }) {
     const { slides, etag } = await getSlides(env);
     if (slides.length >= MAX_SLIDES) return error('Maximum of 24 images reached');
     const id = crypto.randomUUID() + ext;
-    await env.AUSO_MEDIA.put(`carousel/images/${id}`, bytes, {
+    await mediaBucket(env).put(`carousel/images/${id}`, bytes, {
       httpMetadata: { contentType: file.type },
     });
     const slide = {
@@ -80,13 +82,13 @@ export async function onRequestPost({ request, env }) {
       createdAt: new Date().toISOString(),
     };
     try { await saveSlides(env, [...slides, slide], etag); }
-    catch (e) { await env.AUSO_MEDIA.delete(`carousel/images/${id}`); throw e; }
+    catch (e) { await mediaBucket(env).delete(`carousel/images/${id}`); throw e; }
     return Response.json({ slide }, { status: 201 });
   } catch (cause) { return failure(cause, 'Could not save image'); }
 }
 
 export async function onRequestPatch({ request, env }) {
-  if (!env.AUSO_MEDIA) return error('R2 is not configured', 503);
+  if (!mediaBucket(env)) return error('R2 is not configured', 503);
   let body;
   try { body = await request.json(); } catch { return error('Invalid JSON'); }
   if (!Array.isArray(body?.slides) || body.slides.length > MAX_SLIDES || body.slides.some(item => !item || typeof item.id !== 'string')) return error('Invalid slide list');
@@ -110,14 +112,14 @@ export async function onRequestPatch({ request, env }) {
 }
 
 export async function onRequestDelete({ request, env }) {
-  if (!env.AUSO_MEDIA) return error('R2 is not configured', 503);
+  if (!mediaBucket(env)) return error('R2 is not configured', 503);
   const id = new URL(request.url).searchParams.get('id');
   if (!id) return error('Missing image id');
   try {
     const { slides, etag } = await getSlides(env);
     if (!slides.some((slide) => slide.id === id)) return error('Image not found', 404);
     await saveSlides(env, slides.filter((slide) => slide.id !== id), etag);
-    await env.AUSO_MEDIA.delete(`carousel/images/${id}`);
+    await mediaBucket(env).delete(`carousel/images/${id}`);
     return Response.json({ success: true });
   } catch (cause) { return failure(cause, 'Could not delete image'); }
 }
