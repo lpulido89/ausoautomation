@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>AUSO | Materiales de cursos</title>
+  </head>
+  <body>
+    <main>
+      <a href="/admin/">← Administración</a>
+      <h1>Materiales de cursos</h1>
+      <p>Crea un curso, sube sus archivos y da acceso por correo.</p>
+      <p id="status" role="status">Cargando…</p>
+      <form id="course">
+        <label>Nombre del curso <input name="title" required maxlength="100" /></label>
+        <button>Crear curso</button>
+      </form>
+      <form id="upload">
+        <label>Curso <select name="course" required></select></label>
+        <label>Archivo (máx. 50 MB) <input name="file" type="file" required /></label>
+        <button>Subir archivo</button>
+      </form>
+      <form id="assign">
+        <label>Curso <select name="course" required></select></label>
+        <label>Correo del cliente <input name="email" type="email" required maxlength="254" /></label>
+        <button>Dar acceso</button>
+      </form>
+      <section><h2>Archivos subidos</h2><ul id="files"></ul></section>
+      <section><h2>Accesos asignados</h2><ul id="access"></ul></section>
+    </main>
+    <script>
+      const api = '/api/admin/materials';
+      const status = document.querySelector('#status')!;
+      const selects = document.querySelectorAll<HTMLSelectElement>('select[name=course]');
+      const files = document.querySelector('#files')!;
+      const access = document.querySelector('#access')!;
+      let busy = false;
+      async function request(url: string, options?: RequestInit) {
+        const response = await fetch(url, options);
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result) throw new Error(result?.error || 'No se pudo completar la operación.');
+        return result;
+      }
+      function send(action: string, values: Record<string, string>) {
+        return request(api, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ action, ...values }) });
+      }
+      async function load() {
+        const result = await request(api);
+        const titles = new Map<string, string>(result.courses.map(({id,title}) => [id,title]));
+        for (const select of selects) {
+          const previous = select.value;
+          select.replaceChildren(new Option('Selecciona un curso', ''));
+          for (const [id, title] of titles) select.add(new Option(title, id));
+          select.value = titles.has(previous) ? previous : '';
+        }
+        files.replaceChildren();
+        for (const file of result.files) {
+          const li = document.createElement('li');
+          li.textContent = `${titles.get(file.course_id)} — ${file.filename}`;
+          files.append(li);
+        }
+        access.replaceChildren();
+        for (const entry of result.enrollments) {
+          const li = document.createElement('li');
+          const button = document.createElement('button');
+          li.append(`${entry.email} — ${titles.get(entry.course_id)} `, button);
+          button.textContent = 'Quitar acceso';
+          button.addEventListener('click', () => run(() => send('revoke', { email:entry.email, course:entry.course_id }), 'Acceso retirado.'));
+          access.append(li);
+        }
+      }
+      async function run(action: () => Promise<unknown>, message: string) {
+        if (busy) return;
+        busy = true;
+        status.textContent = 'Procesando…';
+        try {
+          await action();
+          await load();
+          status.textContent = message;
+        } catch (error) {
+          status.textContent = error instanceof Error ? error.message : 'Ocurrió un error.';
+        } finally { busy = false; }
+      }
+      function onSubmit(id: string, action: (data: FormData) => Promise<unknown>, message: string) {
+        document.querySelector<HTMLFormElement>('#' + id)?.addEventListener('submit', event => {
+          event.preventDefault();
+          const form = event.currentTarget as HTMLFormElement;
+          void run(async () => {
+            await action(new FormData(form));
+            form.reset();
+          }, message);
+        });
+      }
+      onSubmit('course', data => send('course', { title:String(data.get('title')) }), 'Curso creado.');
+      onSubmit('assign', data => send('assign', { email:String(data.get('email')), course:String(data.get('course')) }), 'Acceso asignado.');
+      onSubmit('upload', async data => {
+        const file = data.get('file');
+        if (!(file instanceof File) || !file.size || file.size > 50 * 1024 * 1024) throw new Error('Elige un archivo de hasta 50 MB.');
+        const query = new URLSearchParams({ upload:'1', course:String(data.get('course')), name:file.name });
+        await request(api + '?' + query, { method:'POST', body:file });
+      }, 'Archivo subido.');
+      load().then(() => { status.textContent = ''; }).catch(error => { status.textContent = error.message; });
+    </script>
+    <style>
+      :global(body) { background:#101216; color:#f3f4f6; font:1rem system-ui; margin:0; }
+      main { max-width:54rem; margin:auto; padding:3rem 1.25rem; }
+      a { color:#ff8996; }
+      form, section { background:#191d24; padding:1.25rem; border:1px solid #363b44; border-radius:12px; margin-top:1rem; }
+      label { display:block; margin-bottom:.75rem; }
+      input, select { display:block; box-sizing:border-box; width:100%; padding:.55rem; margin-top:.25rem; }
+      button { background:#af2336; color:white; padding:.55rem .85rem; border:0; border-radius:5px; cursor:pointer; }
+      li { padding:.35rem 0; overflow-wrap:anywhere; }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>AUSO | Mis cursos</title>
+  </head>
+  <body>
+    <main>
+      <a href="/">← AUSO</a>
+      <h1>Mis cursos</h1>
+      <p id="status" role="status">Cargando tus cursos…</p>
+      <div id="courses"></div>
+    </main>
+    <script>
+      const status = document.querySelector('#status');
+      const container = document.querySelector('#courses');
+      if (status && container) {
+        try {
+          const response = await fetch('/api/portal/courses');
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.error);
+          status.textContent = result.courses.length ? '' : 'Todavía no tienes cursos asignados.';
+          for (const course of result.courses) {
+            const section = document.createElement('section');
+            const title = document.createElement('h2');
+            title.textContent = course.title;
+            section.append(title);
+            if (!course.files.length) section.append('Todavía no hay archivos para este curso.');
+            for (const file of course.files) {
+              const link = document.createElement('a');
+              link.href = '/api/portal/download/' + encodeURIComponent(file.id);
+              link.textContent = 'Descargar ' + file.name;
+              section.append(link);
+            }
+            container.append(section);
+          }
+        } catch (cause) {
+          status.textContent = cause instanceof Error && !(cause instanceof SyntaxError)
+            ? cause.message : 'No pudimos cargar tus cursos. Vuelve a iniciar sesión e inténtalo de nuevo.';
+        }
+      }
+    </script>
+    <style>
+      :global(body) { background:#101216; color:#f3f4f6; font:1rem system-ui; margin:0; }
+      main { max-width:54rem; margin:auto; padding:3rem 1.25rem; }
+      a { color:#ff8996; overflow-wrap:anywhere; }
+      section { background:#191d24; padding:1.25rem; border:1px solid #363b44; border-radius:12px; margin-top:1rem; }
+      section a { display:block; padding:.45rem 0; }
+    </style>
+  </body>
+</html>
