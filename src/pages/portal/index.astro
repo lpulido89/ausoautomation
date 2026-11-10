@@ -4,13 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
-    <title>AUSO | Mis cursos</title>
+    <title>AUSO | Mis descargas</title>
   </head>
   <body>
     <main>
       <a href="/">← AUSO</a>
-      <h1>Mis cursos</h1>
-      <p id="status" role="status">Cargando tus cursos…</p>
+      <h1>Mis descargas</h1>
+      <p>Abre una carpeta para ver sus archivos.</p>
+      <p id="status" role="status">Cargando tus carpetas…</p>
       <div id="courses"></div>
     </main>
     <script>
@@ -21,13 +22,13 @@
           const response = await fetch('/api/portal/courses');
           const result = await response.json();
           if (!response.ok) throw new Error(result.error);
-          status.textContent = result.courses.length ? '' : 'Todavía no tienes cursos asignados.';
+          status.textContent = result.courses.length ? '' : 'Todavía no tienes carpetas compartidas.';
           for (const course of result.courses) {
-            const section = document.createElement('section');
-            const title = document.createElement('h2');
-            title.textContent = course.title;
+            const section = document.createElement('details');
+            const title = document.createElement('summary');
+            title.textContent = `${course.title} · ${course.files.length} ${course.files.length === 1 ? 'archivo' : 'archivos'}`;
             section.append(title);
-            if (!course.files.length) section.append('Todavía no hay archivos para este curso.');
+            if (!course.files.length) section.append('Esta carpeta está vacía.');
             for (const file of course.files) {
               const link = document.createElement('a');
               link.href = '/api/portal/download/' + encodeURIComponent(file.id);
@@ -38,7 +39,7 @@
           }
         } catch (cause) {
           status.textContent = cause instanceof Error && !(cause instanceof SyntaxError)
-            ? cause.message : 'No pudimos cargar tus cursos. Vuelve a iniciar sesión e inténtalo de nuevo.';
+            ? cause.message : 'No pudimos cargar tus carpetas. Vuelve a iniciar sesión e inténtalo de nuevo.';
         }
       }
     </script>
@@ -46,8 +47,9 @@
       :global(body) { background:#101216; color:#f3f4f6; font:1rem system-ui; margin:0; }
       main { max-width:54rem; margin:auto; padding:3rem 1.25rem; }
       a { color:#ff8996; overflow-wrap:anywhere; }
-      section { background:#191d24; padding:1.25rem; border:1px solid #363b44; border-radius:12px; margin-top:1rem; }
-      section a { display:block; padding:.45rem 0; }
+      #courses :global(details) { background:#191d24; padding:1.25rem; border:1px solid #363b44; border-radius:12px; margin-top:1rem; }
+      #courses :global(summary) { cursor:pointer; font-weight:700; }
+      #courses :global(a) { display:block; padding:.45rem 0; color:#ff8996; overflow-wrap:anywhere; }
     </style>
   </body>
 </html>

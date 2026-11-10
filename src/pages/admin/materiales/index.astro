@@ -10,45 +10,58 @@
     <main>
       <a href="/admin/">← Administración</a>
       <h1>Materiales de cursos</h1>
-      <p>Crea un curso, sube sus archivos y da acceso por correo.</p>
+      <p>Abre una carpeta para cambiar sus archivos o compartirla.</p>
       <p id="status" role="status">Cargando…</p>
       <form id="course">
-        <label>Nombre del curso <input name="title" required maxlength="100" /></label>
-        <button>Crear curso</button>
+        <label>Nombre de la carpeta <input name="title" required maxlength="100" /></label>
+        <button>Crear carpeta</button>
       </form>
-      <form id="upload">
-        <label>Curso <select name="course" required></select></label>
-        <label>Archivo (máx. 50 MB) <input name="file" type="file" required /></label>
-        <button>Subir archivo</button>
-      </form>
+      <section><h2>Carpetas</h2><div id="folders" class="folders"></div></section>
+      <div id="open-folder" hidden>
+        <section>
+          <h2 id="folder-title"></h2>
+          <ul id="files"></ul>
+          <form id="upload">
+            <label>Archivo (máx. 50 MB) <input name="file" type="file" required /></label>
+            <button>Subir archivo</button>
+          </form>
+        </section>
+        <form id="assign-group">
+          <h2>Compartir esta carpeta</h2>
+          <label>Correos (hasta 100)
+            <textarea name="emails" rows="4" required placeholder="Pega los correos separados por saltos de línea, comas o punto y coma"></textarea>
+          </label>
+          <button>Dar acceso</button>
+        </form>
+        <section><h2>Quién tiene acceso</h2><ul id="access"></ul></section>
+      </div>
       <form id="assign-client">
-        <h2>Por cliente</h2>
+        <h2>Compartir varias carpetas con un cliente</h2>
         <label>Correo del cliente <input name="email" type="email" required maxlength="254" /></label>
         <fieldset>
-          <legend>Cursos que tomó</legend>
+          <legend>Carpetas para compartir</legend>
           <div id="course-checklist"></div>
         </fieldset>
-        <button>Dar acceso a los cursos marcados</button>
+        <button>Dar acceso a las carpetas marcadas</button>
       </form>
-      <form id="assign-group">
-        <h2>Por grupo</h2>
-        <label>Curso <select name="course" required></select></label>
-        <label>Correos del grupo (hasta 100)
-          <textarea name="emails" rows="4" required placeholder="Pega los correos separados por saltos de línea, comas o punto y coma"></textarea>
-        </label>
-        <button>Dar acceso al grupo</button>
-      </form>
-      <section><h2>Archivos subidos</h2><ul id="files"></ul></section>
-      <section><h2>Accesos asignados</h2><ul id="access"></ul></section>
     </main>
     <script>
       const api = '/api/admin/materials';
       const status = document.querySelector('#status')!;
-      const selects = document.querySelectorAll<HTMLSelectElement>('select[name=course]');
+      const folders = document.querySelector('#folders')!;
+      const openFolder = document.querySelector<HTMLElement>('#open-folder')!;
+      const folderTitle = document.querySelector('#folder-title')!;
       const checklist = document.querySelector('#course-checklist')!;
       const files = document.querySelector('#files')!;
       const access = document.querySelector('#access')!;
       let busy = false;
+      let selected = '';
+      type Listing = {
+        courses: { id: string; title: string }[];
+        files: { id: string; course_id: string; filename: string }[];
+        enrollments: { email: string; course_id: string }[];
+      };
+      let listing: Listing;
       async function request(url: string, options?: RequestInit) {
         const response = await fetch(url, options);
         const result = await response.json().catch(() => null);
@@ -59,18 +72,29 @@
         return request(api, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ action, ...values }) });
       }
       async function load() {
-        const result = await request(api);
-        const titles = new Map<string, string>(result.courses.map(({id,title}) => [id,title]));
-        for (const select of selects) {
-          const previous = select.value;
-          select.replaceChildren(new Option('Selecciona un curso', ''));
-          for (const [id, title] of titles) select.add(new Option(title, id));
-          select.value = titles.has(previous) ? previous : '';
-        }
+        listing = await request(api);
+        render();
+      }
+      function render() {
+        const titles = new Map(listing.courses.map(({id,title}) => [id,title]));
+        folders.replaceChildren();
+        if (!titles.size) folders.textContent = 'Todavía no hay carpetas.';
         const checked = new Set(Array.from(checklist.querySelectorAll<HTMLInputElement>('input:checked'), input => input.value));
         checklist.replaceChildren();
         if (!titles.size) checklist.textContent = 'Crea un curso para poder asignarlo.';
         for (const [id, title] of titles) {
+          const folder = document.createElement('button');
+          folder.textContent = title;
+          folder.setAttribute('aria-pressed', String(selected === id));
+          folder.addEventListener('click', () => {
+            if (busy) return;
+            selected = id;
+            document.querySelector<HTMLFormElement>('#upload')?.reset();
+            document.querySelector<HTMLFormElement>('#assign-group')?.reset();
+            render();
+            folderTitle instanceof HTMLElement && folderTitle.focus();
+          });
+          folders.append(folder);
           const label = document.createElement('label');
           const input = document.createElement('input');
           input.type = 'checkbox';
@@ -80,17 +104,43 @@
           label.append(input, ' ', title);
           checklist.append(label);
         }
+        openFolder.hidden = !titles.has(selected);
+        folderTitle.textContent = titles.get(selected) || '';
+        folderTitle.setAttribute('tabindex', '-1');
         files.replaceChildren();
-        for (const file of result.files) {
+        const visibleFiles = listing.files.filter(file => file.course_id === selected);
+        if (!visibleFiles.length) files.append(Object.assign(document.createElement('li'), {textContent:'Esta carpeta está vacía.'}));
+        for (const file of visibleFiles) {
           const li = document.createElement('li');
-          li.textContent = `${titles.get(file.course_id)} — ${file.filename}`;
+          const replace = document.createElement('button');
+          replace.textContent = 'Reemplazar';
+          replace.addEventListener('click', () => {
+            if (busy) return;
+            const picker = document.createElement('input');
+            picker.type = 'file';
+            picker.addEventListener('change', () => {
+              const next = picker.files?.[0];
+              if (next) void run(() => upload(next, file.course_id, file.id), 'Archivo reemplazado.');
+            }, { once:true });
+            picker.click();
+          });
+          const remove = document.createElement('button');
+          remove.textContent = 'Eliminar';
+          remove.addEventListener('click', () => {
+            if (!busy && window.confirm(`¿Eliminar «${file.filename}» de esta carpeta?`)) {
+              void run(() => send('delete-file', { id:file.id, course:file.course_id }), 'Archivo eliminado.');
+            }
+          });
+          li.append(file.filename, ' ', replace, ' ', remove);
           files.append(li);
         }
         access.replaceChildren();
-        for (const entry of result.enrollments) {
+        const entries = listing.enrollments.filter(entry => entry.course_id === selected);
+        if (!entries.length) access.append(Object.assign(document.createElement('li'), {textContent:'Todavía no compartes esta carpeta.'}));
+        for (const entry of entries) {
           const li = document.createElement('li');
           const button = document.createElement('button');
-          li.append(`${entry.email} — ${titles.get(entry.course_id)} `, button);
+          li.append(entry.email, ' ', button);
           button.textContent = 'Quitar acceso';
           button.addEventListener('click', () => run(() => send('revoke', { email:entry.email, course:entry.course_id }), 'Acceso retirado.'));
           access.append(li);
@@ -119,7 +169,12 @@
           }, message);
         });
       }
-      onSubmit('course', data => send('course', { title:String(data.get('title')) }), 'Curso creado.');
+      onSubmit('course', async data => {
+        const result = await send('course', { title:String(data.get('title')) });
+        selected = result.id;
+        document.querySelector<HTMLFormElement>('#upload')?.reset();
+        document.querySelector<HTMLFormElement>('#assign-group')?.reset();
+      }, 'Carpeta creada.');
       const batchMessage = ({added}: {added: number}) => added === 0 ? 'Esos accesos ya estaban asignados.' :
         added === 1 ? 'Se agregó 1 acceso.' : `Se agregaron ${added} accesos.`;
       onSubmit('assign-client', data => {
@@ -130,14 +185,15 @@
       onSubmit('assign-group', data => {
         const emails = String(data.get('emails')).split(/[\s,;]+/).filter(Boolean);
         if (!emails.length) throw new Error('Pega al menos un correo.');
-        return send('assign-batch', { emails, courses:[String(data.get('course'))] });
+        return send('assign-batch', { emails, courses:[selected] });
       }, batchMessage);
-      onSubmit('upload', async data => {
-        const file = data.get('file');
+      async function upload(file: FormDataEntryValue | null, course: string, replace?: string) {
         if (!(file instanceof File) || !file.size || file.size > 50 * 1024 * 1024) throw new Error('Elige un archivo de hasta 50 MB.');
-        const query = new URLSearchParams({ upload:'1', course:String(data.get('course')), name:file.name });
+        const query = new URLSearchParams({ upload:'1', course, name:file.name });
+        if (replace) query.set('replace', replace);
         await request(api + '?' + query, { method:'POST', body:file });
-      }, 'Archivo subido.');
+      }
+      onSubmit('upload', data => upload(data.get('file'), selected), 'Archivo subido.');
       load().then(() => { status.textContent = ''; }).catch(error => { status.textContent = error.message; });
     </script>
     <style>
@@ -151,6 +207,10 @@
       input[type=checkbox] { display:inline; width:auto; margin-right:.4rem; accent-color:#af2336; }
       button { background:#af2336; color:white; padding:.55rem .85rem; border:0; border-radius:5px; cursor:pointer; }
       li { padding:.35rem 0; overflow-wrap:anywhere; }
+      .folders { display:flex; flex-wrap:wrap; gap:.6rem; }
+      .folders :global(button) { background:#303641; }
+      .folders :global(button[aria-pressed=true]) { background:#af2336; }
+      section form { padding:0; border:0; }
     </style>
   </body>
 </html>

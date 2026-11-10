@@ -23,12 +23,30 @@ export async function onRequestPost({ request, env }) {
     }
     if (size > MAX_FILE) return error('El archivo supera los 50 MB.', 413);
     if (!await db.prepare('SELECT id FROM courses WHERE id = ?').bind(course).first()) return error('Curso no encontrado.', 404);
-    const id = crypto.randomUUID();
+    const replacement = url.searchParams.get('replace');
+    const existing = replacement
+      ? await db.prepare('SELECT id, filename FROM materials WHERE id = ? AND course_id = ?').bind(replacement, course).first()
+      : null;
+    if (replacement && !existing) return error('Archivo no encontrado en esta carpeta.', 404);
+    const extension = name => (name.match(/\.[^.]+$/)?.[0] || '').toLowerCase();
+    if (existing && extension(filename) !== extension(existing.filename)) {
+      return error('Para reemplazarlo, elige un archivo del mismo formato.', 400);
+    }
+    const id = existing?.id || crypto.randomUUID();
     const stream = new FixedLengthStream(size);
     await Promise.all([
       request.body.pipeTo(stream.writable),
       env.AUSO_DOWNLOADS.put(objectKey(id), stream.readable),
     ]);
+    if (existing) {
+      const result = await db.prepare('UPDATE materials SET size = ? WHERE id = ? AND course_id = ?')
+        .bind(size, id, course).run();
+      if (!result.meta.changes) {
+        await env.AUSO_DOWNLOADS.delete(objectKey(id));
+        return error('El archivo ya no está en esta carpeta.', 404);
+      }
+      return json({ id });
+    }
     try {
       await db.prepare('INSERT INTO materials (id, course_id, filename, size) VALUES (?, ?, ?, ?)')
         .bind(id, course, filename, size).run();
@@ -40,6 +58,14 @@ export async function onRequestPost({ request, env }) {
   }
   if (request.headers.get('Content-Type')?.split(';')[0] !== 'application/json') return error('Formato inválido.', 415);
   const body = await request.json().catch(() => null);
+  if (body?.action === 'delete-file') {
+    if (typeof body.id !== 'string' || typeof body.course !== 'string') return error('Archivo inválido.', 400);
+    const item = await db.prepare('SELECT id FROM materials WHERE id = ? AND course_id = ?').bind(body.id, body.course).first();
+    if (!item) return error('Archivo no encontrado en esta carpeta.', 404);
+    await env.AUSO_DOWNLOADS.delete(objectKey(item.id));
+    await db.prepare('DELETE FROM materials WHERE id = ? AND course_id = ?').bind(item.id, body.course).run();
+    return json({ ok:true });
+  }
   if (body?.action === 'course') {
     const title = typeof body.title === 'string' ? body.title.trim() : '';
     if (!title || title.length > 100) return error('Escribe un nombre de curso válido.', 400);

@@ -35,6 +35,7 @@ test('admin can create courses, upload and assign materials; each client can onl
   const reads = [];
   const env = { PORTAL_DB: db, AUSO_DOWNLOADS: {
     put: async (key, stream) => bucket.set(key, await new Response(stream).arrayBuffer()),
+    delete: async key => bucket.delete(key),
     get: async key => { reads.push(key); return bucket.has(key) ? {body:bucket.get(key)} : null; },
   } };
   t.mock.method(globalThis, 'fetch', async () => assert.fail('No external services should be called'));
@@ -100,4 +101,19 @@ test('admin can create courses, upload and assign materials; each client can onl
   assert.deepEqual((await (await courses({env,data:{clientEmail:'new@example.com'}})).json()).courses, []);
   const list = await (await courses({env,data:{clientEmail:alice}})).json();
   assert.deepEqual(list.courses.map(item => item.title), ['HMI','PLC']);
+  const replace = (course, name) => onRequestPost({ env, request:new Request(base + '?' +
+    new URLSearchParams({upload:'1', course, name, replace:plc.id}), {
+    method:'POST', headers:{'Content-Length':'7'}, body:'updated',
+  }) });
+  assert.equal((await replace(hmi.course, 'v2.zip')).status, 404);
+  assert.equal((await replace(plc.course, 'v2.pdf')).status, 400);
+  assert.equal(await (await download({env,data:{clientEmail:alice},params:{id:plc.id}})).text(), 'PLC.zip');
+  assert.deepEqual(await (await replace(plc.course, 'v2.zip')).json(), {id:plc.id});
+  assert.equal(await (await download({env,data:{clientEmail:alice},params:{id:plc.id}})).text(), 'updated');
+  assert.equal((await send({action:'delete-file',course:hmi.course,id:plc.id})).status, 404);
+  assert.equal((await send({action:'delete-file',course:plc.course,id:plc.id})).status, 200);
+  assert.equal((await download({env,data:{clientEmail:alice},params:{id:plc.id}})).status, 404);
+  const after = await (await courses({env,data:{clientEmail:alice}})).json();
+  assert.deepEqual(after.courses.find(item => item.title === 'PLC').files, []);
+  assert.equal(bucket.size, 1);
 });
