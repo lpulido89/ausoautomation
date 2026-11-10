@@ -74,7 +74,7 @@
 
     align-items:center;
 
-    gap:clamp(22px,3vw,50px);
+    gap:clamp(16px,2vw,32px);
 
     transition:.35s ease;
 
@@ -119,6 +119,23 @@
 
     background:var(--primary);
 
+}
+
+.nav-links .portal-link{
+    display:inline-flex;
+    align-items:center;
+    min-height:44px;
+    padding:0 14px;
+    border:1px solid #e84960;
+    border-radius:6px;
+    color:#fff;
+    white-space:nowrap;
+}
+
+.nav-links .portal-link:hover,
+.nav-links .portal-link:focus-visible{
+    background:#a91c31;
+    color:#fff;
 }
 
 .menu-toggle{
