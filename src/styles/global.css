@@ -310,10 +310,16 @@ section{
 
 .service-icon{
 
-    font-size:2rem;
-
+    display:block;
+    width:36px;
+    height:36px;
     margin-bottom:22px;
-
+    color:#b9c2ce;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.5;
+    stroke-linecap:round;
+    stroke-linejoin:round;
     transform-origin:left center;
     transition:transform .35s cubic-bezier(.22,1,.36,1);
 
@@ -332,6 +338,10 @@ section{
 
     .service-card:hover .service-icon{
         transform:scale(1.08);
+    }
+
+    .service-card:hover .service-icon-accent{
+        stroke:#f3465c;
     }
 }
 
