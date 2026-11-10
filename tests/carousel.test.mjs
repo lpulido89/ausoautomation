@@ -129,7 +129,7 @@ test('accepts a correctly signed token only for Leonardo administrative Gmail', 
   };
   try {
     for (const [email, expected] of [
-      ['leonardo.pulido89@gmail.com', 200],
+      ['leonardo.pulido89@gmail.com', 201],
       ['someoneelse@gmail.com', 403],
     ]) {
       const token = await signToken(email);
@@ -138,9 +138,14 @@ test('accepts a correctly signed token only for Leonardo administrative Gmail', 
           headers: {'Cf-Access-Jwt-Assertion': token},
         }),
         env: {CF_ACCESS_TEAM_DOMAIN:domain, CF_ACCESS_AUD:aud},
-        next:async () => Response.json({ok:true}),
+        next:async () => Response.json({ok:true}, {status:201}),
       });
       assert.equal(response.status, expected, `Admin access result for ${email}`);
+      assert.equal(response.headers.get('Cache-Control'), 'no-store');
+      if (expected === 201) {
+        assert.match(response.headers.get('Content-Type'), /application\/json/);
+        assert.deepEqual(await response.json(), {ok:true});
+      }
     }
   } finally { globalThis.fetch = originalFetch; }
 });

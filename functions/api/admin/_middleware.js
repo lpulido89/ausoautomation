@@ -56,7 +56,8 @@ export async function onRequest(context) {
   if (origin && origin !== new URL(context.request.url).origin) {
     return Response.json({ error: 'Access denied' }, { status: 403, headers });
   }
-  const result = new Response(await context.next());
-  result.headers.set('Cache-Control', 'no-store');
-  return result;
+  const result = await context.next();
+  const response = new Response(result.body, result);
+  response.headers.set('Cache-Control', 'no-store');
+  return response;
 }
