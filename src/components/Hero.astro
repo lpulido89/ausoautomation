@@ -1,4 +1,8 @@
-<section class="hero" id="top">s
+---
+import AusoCarousel from "./AusoCarousel.astro";
+---
+
+<section class="hero" id="top">
 
     <div class="tech-background"></div>
     <div class="tech-lines"></div>
@@ -64,6 +68,7 @@
     </div>
 
 </section>
+<AusoCarousel />
 <section class="services" id="services">
 
     <div class="container">
@@ -506,189 +511,3 @@
     </div>
 
 </footer>
-<style>
-
-.hero{
-
-    position:relative;
-
-    min-height:calc(100vh - 90px);
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    overflow:hidden;
-
-    background:
-    radial-gradient(circle at 50% 15%, rgba(213,22,47,.10), transparent 35%),
-    radial-gradient(circle at center,#16181c 0%,#0b0c10 55%,#090a0d 100%);
-
-}
-
-.hero::before{
-
-    content:"";
-
-    position:absolute;
-
-    inset:0;
-
-    pointer-events:none;
-
-    background:
-        repeating-linear-gradient(
-            135deg,
-            transparent 0px,
-            transparent 180px,
-            rgba(255,255,255,.018) 181px,
-            transparent 182px
-        );
-
-    opacity:.35;
-
-}
-
-.hero-content{
-
-    position:relative;
-
-    z-index:2;
-
-    width:min(92%,1200px);
-
-    margin:auto;
-
-    text-align:center;
-
-    padding-top:clamp(60px,8vw,140px);
-
-    padding-bottom:clamp(30px,5vw,80px);
-
-}
-
-.hero-logo{
-
-    width:clamp(280px,42vw,620px);
-
-    margin:0 auto 2rem;
-
-    filter:drop-shadow(0 0 18px rgba(213,22,47,.12));
-
-}
-
-.hero h1{
-
-    font-size:clamp(2.2rem,4vw,4rem);
-
-    font-weight:700;
-
-    line-height:1.1;
-
-    max-width:1000px;
-
-    margin:0 auto 1.25rem;
-
-}
-
-.hero p{
-
-    width:min(720px,92%);
-
-    margin:0 auto;
-
-    color:#b8bcc5;
-
-    font-size:clamp(1rem,1.1vw,1.2rem);
-
-    line-height:1.7;
-
-}
-.hero-buttons{
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    flex-wrap:wrap;
-
-    gap:18px;
-
-    margin-top:clamp(24px,3vw,42px);
-
-}
-.services-bar{
-
-    display:grid;
-
-    grid-template-columns:repeat(5,1fr);
-
-    border-top:1px solid rgba(255,255,255,.08);
-
-    background:#0b0c10;
-
-}
-
-.service{
-
-    padding:38px 24px;
-
-    text-align:center;
-
-    border-right:1px solid rgba(255,255,255,.06);
-
-}
-
-.service:last-child{
-
-    border-right:none;
-
-}
-
-.service h3{
-
-    margin-bottom:10px;
-
-    color:white;
-
-}
-
-.service span{
-
-    color:#9da3ad;
-
-    font-size:.9rem;
-
-}
-
-@media(max-width:1000px){
-
-    .services-bar{
-
-        grid-template-columns:1fr;
-
-    }
-.nav-content{
-
-    height:72px;
-
-}
-
-.logo img{
-
-    height:42px;
-
-}
-
-.navbar.scrolled .logo img{
-
-    height:42px;
-
-}
-}
-
-</style>

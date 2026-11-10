@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "include": ["/admin", "/admin/*", "/api/admin", "/api/admin/*", "/api/carousel", "/api/carousel-image/*"],
+  "exclude": []
+}

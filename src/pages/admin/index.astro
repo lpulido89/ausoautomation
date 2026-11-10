@@ -1,0 +1,178 @@
+---
+// Administrative page: Cloudflare Access must protect /admin/* AND /api/admin/*.
+// The API independently verifies the signed Access JWT and administrator email.
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>AUSO | Admin · Homepage Gallery</title>
+    <style>
+      :root { color-scheme:dark; font-family:Inter,system-ui,-apple-system,sans-serif; }
+      * { box-sizing:border-box; }
+      body { margin:0; color:#f3f4f6; background:#0b0d10; }
+      header { border-bottom:1px solid #25282e; padding:21px clamp(18px,5vw,75px); background:#111318; display:flex; gap:18px; align-items:center; justify-content:space-between; }
+      .brand { font-weight:800; font-size:1.18rem; letter-spacing:.09em; }
+      .brand span { color:#de2c46; }
+      header a { color:#b5bbc8; text-decoration:none; font-size:.85rem; }
+      main { max-width:1180px; padding:44px 20px 100px; margin:auto; }
+      .eyebrow { color:#e33b53; text-transform:uppercase; font-size:.72rem; letter-spacing:.18em; font-weight:800; }
+      h1 { font-size:clamp(2rem,5vw,3rem); letter-spacing:-.045em; margin:12px 0; }
+      .intro { color:#9fa7b4; max-width:660px; line-height:1.7; }
+      .layout { display:grid; grid-template-columns:minmax(265px,360px) 1fr; gap:30px; margin-top:35px; align-items:start; }
+      .panel { background:#14171c; border:1px solid #2c3038; border-radius:16px; padding:24px; }
+      h2 { margin:0 0 20px; font-size:1.12rem; }
+      label { font-size:.82rem; color:#c3c8d0; font-weight:600; display:block; margin-bottom:8px; }
+      input, textarea { width:100%; background:#0d1015; border:1px solid #373b43; color:#f3f4f6; border-radius:8px; padding:12px 13px; font:inherit; }
+      input:focus, textarea:focus { outline:2px solid #b4253c; border-color:transparent; }
+      input[type=file] { padding:13px; font-size:.82rem; }
+      textarea { resize:vertical; min-height:72px; }
+      .field { margin-bottom:20px; }
+      button { border:1px solid #414651; padding:11px 15px; border-radius:8px; color:white; background:#262a33; font:inherit; font-size:.83rem; font-weight:700; cursor:pointer; }
+      button:hover:not(:disabled) { border-color:#cf3049; }
+      button:disabled { opacity:.5; cursor:not-allowed; }
+      .primary { background:#cf2742; border-color:#cf2742; }
+      .primary:hover:not(:disabled) { background:#e02e4b; }
+      .danger { color:#f2a2ab; }
+      .toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap:12px; }
+      .toolbar h2 { margin:0; }
+      #slides { display:grid; gap:14px; }
+      .slide { display:grid; grid-template-columns:150px minmax(0,1fr); background:#14171c; border:1px solid #30343c; border-radius:14px; overflow:hidden; }
+      .thumb { height:100%; width:100%; min-height:165px; object-fit:cover; background:#272a32; }
+      .details { padding:17px; }
+      .details .field { margin-bottom:10px; }
+      .actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:13px; }
+      .actions button { padding:8px 10px; }
+      .actions label { display:flex; align-items:center; gap:8px; margin:0 7px 0 0; }
+      .actions input { width:16px; height:16px; accent-color:#cc2843; }
+      .muted { color:#8d96a4; font-size:.83rem; }
+      #message { position:sticky; bottom:18px; z-index:2; margin-top:20px; padding:13px 17px; background:#242933; border-radius:10px; border:1px solid #414958; display:none; }
+      #message.visible { display:block; }
+      #message.error { border-color:#d6354e; color:#ffd0d7; }
+      .empty { padding:40px; border:1px dashed #414651; border-radius:14px; color:#9fa7b4; text-align:center; }
+      @media (max-width:800px) { .layout { grid-template-columns:1fr; } }
+      @media (max-width:520px) { .slide { grid-template-columns:1fr; } .thumb { height:195px; min-height:0; } main { padding-top:28px; } }
+    </style>
+  </head>
+  <body>
+    <header><div class="brand">AUSO<span> / ADMIN</span></div><a href="/">← Back to website</a></header>
+    <main>
+      <div class="eyebrow">Content management</div>
+      <h1>Homepage gallery</h1>
+      <p class="intro">Upload project photography, edit captions, rearrange slides and choose what visitors see. Changes become visible without editing or rebuilding the website.</p>
+      <div class="layout">
+        <section class="panel" aria-labelledby="upload-heading">
+          <h2 id="upload-heading">Add a photograph</h2>
+          <form id="upload-form">
+            <div class="field"><label for="image">Photo (JPG, PNG or WebP · max. 8 MB)</label><input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp" required /></div>
+            <div class="field"><label for="title">Title</label><input id="title" name="title" maxlength="100" placeholder="Industrial automation in action" required /></div>
+            <div class="field"><label for="description">Short description</label><textarea id="description" name="description" maxlength="250" placeholder="A brief description of the project..."></textarea></div>
+            <button class="primary" id="upload-button" type="submit">Upload photograph</button>
+          </form>
+          <p class="muted">Only approved AUSO administrators can upload. Up to 24 photos.</p>
+        </section>
+        <section aria-labelledby="gallery-heading">
+          <div class="toolbar"><h2 id="gallery-heading">Gallery <span class="muted" id="count"></span></h2><button class="primary" id="save" disabled>Save changes</button></div>
+          <div id="slides" aria-live="polite"><p class="muted">Loading gallery...</p></div>
+        </section>
+      </div>
+      <div id="message" role="status" aria-live="polite"></div>
+    </main>
+    <script>
+      const area = document.getElementById('slides');
+      const count = document.getElementById('count');
+      const saveButton = document.getElementById('save');
+      const uploadForm = document.getElementById('upload-form');
+      const uploadButton = document.getElementById('upload-button');
+      const message = document.getElementById('message');
+      let slides = [];
+      let etag = null;
+      let dirty = false;
+
+      function alertMessage(value, isError = false) {
+        message.textContent = value;
+        message.className = `visible${isError ? ' error' : ''}`;
+      }
+      async function api(url, options) {
+        const response = await fetch(url, { credentials:'same-origin', cache:'no-store', ...options });
+        const type = response.headers.get('content-type') || '';
+        if (!type.includes('application/json')) throw new Error('Please sign in to Cloudflare Access and reload this page.');
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Unexpected error');
+        return result;
+      }
+      function field(label, initial, multiline, changed) {
+        const box = document.createElement('div'); box.className = 'field';
+        const name = document.createElement('label'); name.textContent = label;
+        const control = document.createElement(multiline ? 'textarea' : 'input');
+        control.value = initial || ''; control.maxLength = multiline ? 250 : 100;
+        control.addEventListener('input', () => changed(control.value));
+        box.append(name, control); return box;
+      }
+      function markDirty() { dirty = true; saveButton.disabled = false; }
+      function render() {
+        area.replaceChildren(); count.textContent = `(${slides.length}/24)`;
+        if (!slides.length) { const blank = document.createElement('div'); blank.className = 'empty'; blank.textContent = 'No photos yet. Upload your first project photograph.'; area.append(blank); }
+        slides.forEach((item, position) => {
+          const row = document.createElement('article'); row.className = 'slide';
+          const img = document.createElement('img'); img.className = 'thumb'; img.alt = item.title || 'Project photo'; img.src = `/api/admin/carousel-image/${encodeURIComponent(item.id)}`; img.loading = 'lazy';
+          const details = document.createElement('div'); details.className = 'details';
+          details.append(field('Title', item.title, false, value => { item.title = value; markDirty(); }));
+          details.append(field('Description', item.description, true, value => { item.description = value; markDirty(); }));
+          const actions = document.createElement('div'); actions.className = 'actions';
+          const label = document.createElement('label');
+          const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = item.active;
+          checkbox.addEventListener('change', () => { item.active = checkbox.checked; markDirty(); });
+          label.append(checkbox, document.createTextNode('Visible'));
+          actions.append(label);
+          for (const [caption, offset] of [['↑ Up', -1], ['↓ Down', 1]]) {
+            const button = document.createElement('button'); button.type = 'button'; button.textContent = caption;
+            button.disabled = position + offset < 0 || position + offset >= slides.length;
+            button.addEventListener('click', () => {
+              [slides[position],slides[position + offset]] = [slides[position + offset],slides[position]];
+              markDirty(); render();
+            });
+            actions.append(button);
+          }
+          const remove = document.createElement('button'); remove.className = 'danger'; remove.type = 'button'; remove.textContent = 'Delete';
+          remove.addEventListener('click', async () => {
+            if (!window.confirm('Permanently delete this photograph?')) return;
+            if (dirty) { alertMessage('Save your pending changes before deleting a photograph.', true); return; }
+            remove.disabled = true;
+            try { await api(`/api/admin/carousel?id=${encodeURIComponent(item.id)}`, { method:'DELETE' }); await load(); alertMessage('Photo deleted.'); }
+            catch (error) { alertMessage(error.message, true); remove.disabled = false; }
+          });
+          actions.append(remove); details.append(actions); row.append(img,details); area.append(row);
+        });
+      }
+      async function load() {
+        const data = await api('/api/admin/carousel');
+        slides = data.slides; etag = data.etag; dirty = false; saveButton.disabled = true; render();
+      }
+      saveButton.addEventListener('click', async () => {
+        saveButton.disabled = true;
+        try {
+          await api('/api/admin/carousel', {
+            method:'PATCH', headers:{ 'Content-Type':'application/json' },
+            body:JSON.stringify({ etag, slides:slides.map(({id,title,description,active})=>({id,title,description,active})) })
+          });
+          await load(); alertMessage('Gallery changes saved.');
+        } catch(error) { alertMessage(error.message, true); saveButton.disabled = false; }
+      });
+      uploadForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        if (dirty) { alertMessage('Save your pending changes before uploading.', true); return; }
+        uploadButton.disabled = true;
+        try {
+          const body = new FormData(uploadForm);
+          await api('/api/admin/carousel', {method:'POST', body});
+          uploadForm.reset(); await load(); alertMessage('Photo uploaded successfully.');
+        } catch(error) { alertMessage(error.message, true); }
+        finally { uploadButton.disabled = false; }
+      });
+      load().catch(error => { area.textContent = 'Unable to load the gallery.'; alertMessage(error.message, true); });
+    </script>
+  </body>
+</html>
