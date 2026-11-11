@@ -412,14 +412,6 @@ section{
         width:92%;
     }
 
-  .hero h1{
-    font-size:clamp(2rem,5vw,4.2rem);
-}
-
-   .hero-logo{
-    width:clamp(320px,60vw,820px);
-}
-
     .services-grid{
         grid-template-columns:repeat(2,1fr);
     }
@@ -427,10 +419,6 @@ section{
 }
 
 @media (max-width: 600px){
-
-    .hero h1{
-    font-size:clamp(2rem,5vw,4.2rem);
-}
 
     .hero p{
         font-size:1rem;

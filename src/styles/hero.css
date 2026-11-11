@@ -54,9 +54,9 @@
 
 .hero-logo{
 
-    width:clamp(280px,42vw,620px);
+    width:min(62%,360px);
 
-    margin:0 auto 2rem;
+    margin:0 auto 1.4rem;
 
     filter:drop-shadow(0 0 18px rgba(213,22,47,.12));
 
@@ -64,16 +64,27 @@
 
 .hero h1{
 
-    font-size:clamp(2.2rem,4vw,4rem);
+    font-size:clamp(2rem,3.4vw,3.25rem);
 
     font-weight:700;
 
     line-height:1.1;
 
-    max-width:1000px;
+    max-width:850px;
+    text-wrap:balance;
 
     margin:0 auto 1.25rem;
 
+}
+
+html[lang="en"] .hero-logo{
+    width:min(80%,clamp(280px,42vw,620px));
+    margin-bottom:2rem;
+}
+
+html[lang="en"] .hero h1{
+    font-size:clamp(2.2rem,4vw,4rem);
+    max-width:1000px;
 }
 
 .hero p{

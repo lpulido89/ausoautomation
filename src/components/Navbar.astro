@@ -28,7 +28,7 @@ const es = lang === "es";
 
     <li><a href="#training">{es ? "Capacitación" : "Training"}</a></li>
 
-    <li><a href="#about">{es ? "Por qué AUSO" : "Why AUSO"}</a></li>
+    <li><a href="#about">{es ? "Nosotros" : "Why AUSO"}</a></li>
 
     <li><a href="/portal/" class="portal-link">{es ? "Portal de clientes" : "Client Portal"}</a></li>
 
@@ -59,18 +59,29 @@ const es = lang === "es";
 document.addEventListener("DOMContentLoaded", () => {
 
     const navbar = document.querySelector(".navbar");
-    const sections = document.querySelectorAll("section[id]");
-    const links = document.querySelectorAll(".nav-links a");
+    const links = [...navbar.querySelectorAll('a[href^="#"]')];
+    const sections = [...document.querySelectorAll("section[id]")].filter(section =>
+        links.some(link => link.hash === "#" + section.id)
+    );
 
     const menuButton = document.querySelector(".menu-toggle");
     const menu = document.querySelector(".nav-links");
 
-    // Navbar al hacer scroll
-    window.addEventListener("scroll", () => {
-
+    function updateNavigation() {
         navbar.classList.toggle("scrolled", window.scrollY > 80);
+        const boundary = navbar.getBoundingClientRect().bottom + 64;
+        const current = sections.findLast(section => section.getBoundingClientRect().top <= boundary);
+        for (const link of links) {
+            const active = current && link.hash === "#" + current.id;
+            if (active) link.setAttribute("aria-current", "location");
+            else link.removeAttribute("aria-current");
+        }
+    }
 
-    });
+    window.addEventListener("scroll", updateNavigation, { passive: true });
+    window.addEventListener("resize", updateNavigation);
+    window.addEventListener("pageshow", updateNavigation);
+    updateNavigation();
 
     // Menú móvil
     menuButton.addEventListener("click", () => {
@@ -84,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Cerrar menú al pulsar un enlace
-    links.forEach(link => {
+    menu.querySelectorAll("a").forEach(link => {
 
         link.addEventListener("click", () => {
 
@@ -94,45 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         });
 
-    });
-
-    // Link activo
-    const observer = new IntersectionObserver(
-
-        (entries) => {
-
-            entries.forEach((entry) => {
-
-                if (!entry.isIntersecting) return;
-
-                const id = entry.target.id;
-
-                links.forEach((link) => {
-
-                    link.classList.remove("active");
-
-                    if (link.getAttribute("href") === "#" + id) {
-
-                        link.classList.add("active");
-
-                    }
-
-                });
-
-            });
-
-        },
-
-        {
-
-            threshold:0.45
-
-        }
-
-    );
-
-    sections.forEach(section => {
-        if ([...links].some(link => link.hash === "#" + section.id)) observer.observe(section);
     });
 
 });
