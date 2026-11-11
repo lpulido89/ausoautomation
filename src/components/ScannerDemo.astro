@@ -1,32 +1,36 @@
+---
+const es = Astro.props.lang === "es";
+---
 <article class="scanner" id="scanner-demo" aria-labelledby="scanner-title">
   <div class="scanner-copy">
-    <p class="section-tag">INTERACTIVE DEMO</p>
-    <h3 id="scanner-title">AUSO Industrial Scanner</h3>
-    <p>Identify a training station, capture a sample record, and explore its components through a simulated augmented reality overlay.</p>
-    <p class="scanner-note">Simulation · Sample data · No camera required</p>
+    <p class="section-tag">{es ? "DEMO INTERACTIVA" : "INTERACTIVE DEMO"}</p>
+    <h3 id="scanner-title">{es ? "Escáner industrial de AUSO" : "AUSO Industrial Scanner"}</h3>
+    <p>{es ? "Identifica una estación de capacitación, captura un registro de ejemplo y explora sus componentes en una vista de realidad aumentada simulada." : "Identify a training station, capture a sample record, and explore its components through a simulated augmented reality overlay."}</p>
+    <p class="scanner-note">{es ? "Simulación · Datos de ejemplo · No requiere cámara" : "Simulation · Sample data · No camera required"}</p>
     <div class="scanner-actions">
-      <button type="button" class="btn btn-primary" data-scan>Simulate scan</button>
-      <button type="button" class="btn btn-outline" data-overlay aria-pressed="false" aria-controls="scanner-overlay" disabled>Show AR overlay</button>
+      <button type="button" class="btn btn-primary" data-scan>{es ? "Simular escaneo" : "Simulate scan"}</button>
+      <button type="button" class="btn btn-outline" data-overlay aria-pressed="false" aria-controls="scanner-overlay" disabled>{es ? "Mostrar realidad aumentada" : "Show AR overlay"}</button>
     </div>
     <dl class="scanner-record" hidden>
-      <div><dt>Asset ID</dt><dd>AUSO-DEMO-01</dd></div>
-      <div><dt>Location</dt><dd>Training lab</dd></div>
-      <div><dt>Result</dt><dd>Station identified</dd></div>
+      <div><dt>{es ? "ID del equipo" : "Asset ID"}</dt><dd>AUSO-DEMO-01</dd></div>
+      <div><dt>{es ? "Ubicación" : "Location"}</dt><dd>{es ? "Laboratorio de capacitación" : "Training lab"}</dd></div>
+      <div><dt>{es ? "Resultado" : "Result"}</dt><dd>{es ? "Estación identificada" : "Station identified"}</dd></div>
     </dl>
     <p class="scanner-status" role="status"></p>
-    <a href="#contact">Talk to us about your application →</a>
+    <a href="#contact">{es ? "Cuéntanos sobre tu aplicación →" : "Talk to us about your application →"}</a>
   </div>
   <figure class="scanner-figure">
-    <img src="/images/auso-scanner-demo.png" width="1672" height="941" loading="lazy" decoding="async" alt="AUSO training rack with an operator screen and industrial control modules" />
+    <img src="/images/auso-training-station-scanner.webp" width="1200" height="1500" loading="lazy" decoding="async" alt={es ? "Vista frontal de una estación de capacitación con PLC, panel de operador y motor" : "Front view of an industrial training station with a PLC, operator panel, and motor"} />
     <div id="scanner-overlay" class="scanner-overlay" hidden>
-      <span class="scanner-label hmi">HMI</span>
-      <span class="scanner-label plc">PLC &amp; I/O</span>
-      <span class="scanner-label drive">Drive</span>
+      <button type="button" class="scanner-label hmi" data-component={es ? "HMI · Consulta el estado de la máquina y los controles del operador." : "HMI · View machine status and operator controls."}>HMI</button>
+      <button type="button" class="scanner-label plc" data-component={es ? "PLC · Lee los sensores y controla la secuencia de la estación." : "PLC · Read sensors and control the station sequence."}>PLC</button>
+      <button type="button" class="scanner-label motor" data-component={es ? "Motor · Acciona el sistema de movimiento y demuestra el control de velocidad." : "Motor · Drive the motion system and demonstrate speed control."}>Motor</button>
     </div>
   </figure>
 </article>
 
 <script>
+  const es = document.documentElement.lang === "es";
   const demo = document.querySelector('#scanner-demo');
   const scan = demo?.querySelector<HTMLButtonElement>('[data-scan]');
   const overlayButton = demo?.querySelector<HTMLButtonElement>('[data-overlay]');
@@ -40,13 +44,18 @@
       overlay.hidden = true;
       overlayButton.disabled = reset;
       overlayButton.setAttribute('aria-pressed', 'false');
-      scan.textContent = reset ? 'Simulate scan' : 'Reset demo';
-      status.textContent = reset ? 'Demo reset.' : 'Sample scan complete. Asset AUSO-DEMO-01 identified.';
+      scan.textContent = reset ? (es ? "Simular escaneo" : "Simulate scan") : (es ? "Reiniciar demo" : "Reset demo");
+      status.textContent = reset ? (es ? "Demo reiniciada." : "Demo reset.") : (es ? "Escaneo de ejemplo completado. Se identificó el equipo AUSO-DEMO-01." : "Sample scan complete. Asset AUSO-DEMO-01 identified.");
     });
     overlayButton.addEventListener('click', () => {
       overlay.hidden = !overlay.hidden;
       overlayButton.setAttribute('aria-pressed', String(!overlay.hidden));
-      status.textContent = overlay.hidden ? 'AR overlay hidden.' : 'AR overlay visible: HMI, PLC and I/O, and drive.';
+      status.textContent = overlay.hidden ? (es ? "Vista de realidad aumentada oculta." : "AR overlay hidden.") : (es ? "Selecciona PLC, HMI o Motor para explorar la estación." : "Select PLC, HMI, or Motor to explore the station.");
+    });
+    overlay.querySelectorAll<HTMLButtonElement>('[data-component]').forEach(button => {
+      button.addEventListener('click', () => {
+        status.textContent = button.dataset.component ?? '';
+      });
     });
   }
 </script>
@@ -69,8 +78,10 @@
   .scanner-figure img { display:block; width:100%; height:auto; border-radius:12px; }
   .scanner-overlay { position:absolute; inset:0; }
   .scanner-label { position:absolute; color:#fff; background:#131923; border:1px solid #ff8996; border-radius:5px; padding:.2rem .4rem; font-size:clamp(.68rem,1.3vw,.85rem); transform:translate(-50%, -50%); white-space:nowrap; }
-  .scanner-label.hmi { left:47%; top:37%; }
-  .scanner-label.plc { left:49%; top:69%; }
-  .scanner-label.drive { left:60%; top:75%; }
+  .scanner-label { cursor:pointer; }
+  .scanner-label:hover, .scanner-label:focus-visible { background:#a31f35; }
+  .scanner-label.hmi { left:88%; top:37%; }
+  .scanner-label.plc { left:35%; top:28%; }
+  .scanner-label.motor { left:80%; top:49%; }
   @media(max-width:800px) { .scanner { grid-template-columns:1fr; } }
 </style>

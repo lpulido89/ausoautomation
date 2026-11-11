@@ -1,0 +1,35 @@
+---
+const es = Astro.props.lang === "es";
+---
+<figure class="technology-map">
+    <a href="/images/auso-simatic-technology-map.webp" aria-label={es ? "Ver la lámina de tecnologías a tamaño completo" : "View the technology map at full size"}>
+        <img
+            src="/images/auso-simatic-technology-map.webp"
+            width="1516"
+            height="1037"
+            loading="lazy"
+            decoding="async"
+            alt={es ? "Mapa de automatización SIMATIC con controladores, paneles HMI y redes industriales. Abajo se muestran variadores SINAMICS y equipos CNC SINUMERIK." : "SIMATIC automation map showing controllers, HMI panels and industrial networks, with SINAMICS drives and SINUMERIK CNC equipment below."}
+        />
+    </a>
+    <figcaption>{es ? "Tecnologías Siemens que cubrimos en la capacitación. Selecciona la lámina para verla a tamaño completo." : "Siemens technologies covered in our training. Select the map to view it at full size."}</figcaption>
+</figure>
+
+<style>
+    .technology-map {
+        max-width: 760px;
+        margin: var(--section-gap) auto 0;
+    }
+
+    img {
+        width: 100%;
+        height: auto;
+        border-radius: 16px;
+    }
+
+    figcaption {
+        margin-top: 8px;
+        color: var(--text2);
+        font-size: .875rem;
+    }
+</style>

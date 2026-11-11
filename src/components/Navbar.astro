@@ -1,40 +1,53 @@
+---
+const { lang } = Astro.props;
+const es = lang === "es";
+---
 <nav class="navbar">
 
     <div class="container nav-content">
 
-        <a href="/" class="logo">
+        <a href={es ? "/" : "/en/"} class="logo">
 
             <img src="/images/logo.png" alt="AUSO Logo">
 
         </a>
 
-<button class="menu-toggle" aria-label="Open menu">
+<button type="button" class="menu-toggle" aria-label={es ? "Menú de navegación" : "Navigation menu"} aria-controls="main-menu" aria-expanded="false">
 
     ☰
 
 </button>
 
-<ul class="nav-links">
+<ul class="nav-links" id="main-menu">
 
-    <li><a href="#top">Home</a></li>
+    <li><a href="#top">{es ? "Inicio" : "Home"}</a></li>
 
-    <li><a href="#services">Services</a></li>
+    <li><a href="#services">{es ? "Servicios" : "Services"}</a></li>
 
-    <li><a href="#projects">Projects</a></li>
+    <li><a href="#projects">{es ? "Proyectos" : "Projects"}</a></li>
 
-    <li><a href="#training">Training</a></li>
+    <li><a href="#training">{es ? "Capacitación" : "Training"}</a></li>
 
-    <li><a href="#about">Why AUSO</a></li>
+    <li><a href="#about">{es ? "Por qué AUSO" : "Why AUSO"}</a></li>
 
-    <li><a href="/portal/" class="portal-link">Client Portal</a></li>
+    <li><a href="/portal/" class="portal-link">{es ? "Portal de clientes" : "Client Portal"}</a></li>
+
+    <li class="mobile-contact"><a href="#contact">{es ? "Contáctanos" : "Contact Us"}</a></li>
 
 </ul>
 
-<a href="#contact" class="btn btn-outline">
+<div class="nav-actions">
+<div class="language-switch" aria-label={es ? "Idioma" : "Language"} role="group">
+    <a href="/" hreflang="es" lang="es" aria-label="Español" aria-current={es ? "page" : undefined}>ES</a>
+    <span aria-hidden="true">/</span>
+    <a href="/en/" hreflang="en" lang="en" aria-label="English" aria-current={!es ? "page" : undefined}>EN</a>
+</div>
+<a href="#contact" class="btn btn-outline nav-contact">
 
-    Contact Us
+    {es ? "Contáctanos" : "Contact Us"}
 
 </a>
+</div>
 
     </div>
 
@@ -63,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
     menuButton.addEventListener("click", () => {
 
         menu.classList.toggle("open");
+        menuButton.setAttribute("aria-expanded", String(menu.classList.contains("open")));
 
         menuButton.textContent =
             menu.classList.contains("open") ? "✕" : "☰";
@@ -75,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
         link.addEventListener("click", () => {
 
             menu.classList.remove("open");
+            menuButton.setAttribute("aria-expanded", "false");
             menuButton.textContent = "☰";
 
         });
@@ -116,7 +131,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     );
 
-    sections.forEach(section => observer.observe(section));
+    sections.forEach(section => {
+        if ([...links].some(link => link.hash === "#" + section.id)) observer.observe(section);
+    });
 
 });
 

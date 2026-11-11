@@ -59,6 +59,8 @@ button{
     --text2:#b8bcc5;
 
     --border:rgba(255,255,255,.08);
+    --section-padding:clamp(28px,3.5vw,48px);
+    --section-gap:clamp(16px,2vw,28px);
 
 }
 
@@ -224,7 +226,7 @@ section{
 
 .services{
 
-    padding:120px 0;
+    padding:var(--section-padding) 0;
 
     background:#0d1014;
 
@@ -236,23 +238,28 @@ section{
 
     color:#d5162f;
 
-    letter-spacing:.25em;
+    letter-spacing:.14em;
 
-    font-size:.8rem;
+    font-size:clamp(.95rem,1.3vw,1.125rem);
 
-    margin-bottom:18px;
+    margin-bottom:10px;
 
     font-weight:600;
 
 }
 
-.services h2{
+.services h2,
+.projects h2,
+.training h2,
+.why-auso h2{
 
-    font-size:2.2rem;
+    font-size:clamp(1.9rem,4vw,3.25rem);
 
     max-width:850px;
 
-    line-height:1.2;
+    line-height:1.12;
+
+    margin-bottom:12px;
 
 }
 
@@ -264,7 +271,7 @@ section{
 
     line-height:1.8;
 
-    margin-bottom:60px;
+    margin-bottom:var(--section-gap);
 
 }
 
@@ -441,16 +448,12 @@ section{
         grid-template-columns:1fr;
     }
 
-    .services h2{
-    font-size:clamp(1.8rem,3vw,2.6rem);
-}
-
 }
 /*========================================*/
 
 .projects{
 
-    padding:120px 0;
+    padding:var(--section-padding) 0;
 
     background:#090b0f;
 
@@ -464,9 +467,10 @@ section{
 
     gap:32px;
 
-    margin-top:60px;
+    margin-top:var(--section-gap);
 
 }
+
 
 .project-card{
 
@@ -632,7 +636,7 @@ section{
 
 .why-auso{
 
-    padding:120px 0;
+    padding:var(--section-padding) 0;
 
     background:#090a0d;
 
@@ -759,7 +763,7 @@ section{
 
 .training{
 
-    padding:120px 0;
+    padding:var(--section-padding) 0;
 
     background:#0d1014;
 
@@ -773,7 +777,7 @@ section{
 
     gap:28px;
 
-    margin-top:60px;
+    margin-top:var(--section-gap);
 
 }
 
@@ -840,7 +844,7 @@ section{
 
 .contact-section{
 
-    padding:140px 0;
+    padding:var(--section-padding) 0;
 
     background:#090b0f;
 
@@ -854,7 +858,7 @@ section{
 
     border-radius:22px;
 
-    padding:80px;
+    padding:clamp(24px,4vw,48px);
 
     text-align:center;
 
@@ -902,7 +906,7 @@ section{
 
     border-top:1px solid rgba(255,255,255,.05);
 
-    padding:80px 0 30px;
+    padding:var(--section-padding) 0 30px;
 
 }
 
@@ -974,7 +978,7 @@ section{
 
     .contact-box{
 
-        padding:50px 30px;
+        padding:28px 20px;
 
     }
 

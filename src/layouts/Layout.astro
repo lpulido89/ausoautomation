@@ -12,13 +12,17 @@ import "../styles/footer.css";
 
 interface Props {
     title?: string;
+    lang?: "es" | "en";
 }
 
-const { title = "AUSO | Automation Solutions" } = Astro.props;
+const { title = "AUSO | Automation Solutions", lang = "es" } = Astro.props;
+const description = lang === "es"
+    ? "AUSO se especializa en automatización Siemens, bancos de demostración, laboratorios universitarios, capacitación técnica, aplicaciones industriales y captura de datos."
+    : "AUSO specializes in Siemens automation, demonstration systems, university labs, technical training, industrial apps, and data collection.";
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang={lang}>
 
 <head>
 
@@ -33,8 +37,12 @@ const { title = "AUSO | Automation Solutions" } = Astro.props;
 
     <meta
         name="description"
-        content="Industrial Automation Solutions specializing in Siemens PLCs, Motion Control, Drives, CNC and Technical Training."
+        content={description}
     />
+
+    <link rel="alternate" hreflang="es" href="https://ausoautomation.com/" />
+    <link rel="alternate" hreflang="en" href="https://ausoautomation.com/en/" />
+    <link rel="alternate" hreflang="x-default" href="https://ausoautomation.com/" />
 
     <link
         rel="preconnect"

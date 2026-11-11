@@ -1,6 +1,10 @@
 ---
 import AusoCarousel from "./AusoCarousel.astro";
 import ScannerDemo from "./ScannerDemo.astro";
+import TechnologyMap from "./TechnologyMap.astro";
+
+const { lang } = Astro.props;
+const t = (es: string, en: string) => lang === "es" ? es : en;
 ---
 
 <section class="hero" id="top">
@@ -15,25 +19,15 @@ import ScannerDemo from "./ScannerDemo.astro";
             class="hero-logo"
         />
 
-        <h1>
-            Engineering Solutions for Industrial Automation
-        </h1>
+        <h1>{t("Automatización industrial, sistemas de demostración y capacitación técnica", "Industrial Automation, Demonstration Systems & Technical Training")}</h1>
 
-        <p>
-            We design, program and implement reliable automation systems,
-            industrial training and demo equipment focused on Siemens
-            technologies, Motion Control, Drives and CNC.
-        </p>
+        <p>{t("AUSO se especializa en automatización Siemens para la industria y las universidades. Integramos maquinaria y sistemas de producción, construimos estaciones de demostración y laboratorios, y desarrollamos capacitación técnica, aplicaciones industriales y soluciones de captura de datos.", "AUSO specializes in Siemens automation for industry and universities. We integrate machinery and production systems, build demonstration stations and labs, and develop technical training, industrial apps, and data collection solutions.")}</p>
 
         <div class="hero-buttons">
 
-            <a href="#projects" class="btn btn-primary">
-                View Projects
-            </a>
+            <a href="#projects" class="btn btn-primary">{t("Ver ejemplos de aplicación", "See Application Examples")}</a>
 
-            <a href="#contact" class="btn btn-outline">
-                Contact Us
-            </a>
+            <a href="#contact" class="btn btn-outline">{t("Contáctanos", "Contact Us")}</a>
 
         </div>
 
@@ -42,7 +36,7 @@ import ScannerDemo from "./ScannerDemo.astro";
     <div class="services-bar">
 
         <div class="service">
-            <h3>PLC Automation</h3>
+            <h3>{t("Automatización con PLC", "PLC Automation")}</h3>
             <span>S7-1200 / S7-1500</span>
         </div>
 
@@ -52,40 +46,32 @@ import ScannerDemo from "./ScannerDemo.astro";
         </div>
 
         <div class="service">
-            <h3>Drives & Motion</h3>
+            <h3>{t("Variadores y control de movimiento", "Drives & Motion")}</h3>
             <span>SINAMICS / SIMOTION</span>
         </div>
 
         <div class="service">
-            <h3>Industrial Systems</h3>
-            <span>Networks & Integration</span>
+            <h3>{t("Sistemas industriales", "Industrial Systems")}</h3>
+            <span>{t("Redes e integración", "Networks & Integration")}</span>
         </div>
 
         <div class="service">
-            <h3>Training</h3>
-            <span>Courses & Demo Systems</span>
+            <h3>{t("Capacitación", "Training")}</h3>
+            <span>{t("Cursos y sistemas de demostración", "Courses & Demo Systems")}</span>
         </div>
 
     </div>
 
 </section>
-<AusoCarousel />
 <section class="services" id="services">
 
     <div class="container">
 
-        <span class="section-tag">
-            OUR SERVICES
-        </span>
+        <span class="section-tag">{t("NUESTROS SERVICIOS", "OUR SERVICES")}</span>
 
-        <h2>
-            Engineering Solutions Built Around Siemens Technologies
-        </h2>
+        <h2>{t("Ingeniería industrial para fabricantes y universidades", "Industrial Engineering Services for Manufacturers and Universities")}</h2>
 
-        <p class="section-description">
-            AUSO provides engineering, industrial training and portable demo systems
-            focused on PLCs, Motion Control, Drives, CNC and industrial digitalization.
-        </p>
+        <p class="section-description">{t("Desde la puesta en marcha de una máquina hasta el equipamiento de un laboratorio universitario, diseñamos en función del proceso y de quienes van a usarlo.", "From commissioning a machine to equipping a university lab, we design around the process you need to automate and the people who will use it.")}</p>
 
         <div class="services-grid">
 
@@ -93,12 +79,9 @@ import ScannerDemo from "./ScannerDemo.astro";
 
                 <svg class="service-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect x="3" y="5" width="26" height="22" rx="2"/><path d="M3 10h26M3 22h26M8 7v3m5-3v3m6-3v3m5-3v3M8 22v3m5-3v3m6-3v3m5-3v3"/><circle class="service-icon-accent" cx="23" cy="16" r="1.5"/><path d="M8 15h8m-8 3h5"/></svg>
 
-                <h3>PLC Automation</h3>
+                <h3>{t("Automatización e integración de sistemas", "Automation & Systems Integration")}</h3>
 
-                <p>
-                    Siemens S7-1200 / S7-1500<br>
-                    Programming & Commissioning
-                </p>
+                <p>{t("Programación y puesta en marcha de PLC Siemens, conexión de maquinaria a redes industriales e integración de controles en equipos nuevos y existentes.", "Siemens PLC programming and commissioning, machine networking, and control integration for new and existing production equipment.")}</p>
 
             </article>
 
@@ -108,10 +91,7 @@ import ScannerDemo from "./ScannerDemo.astro";
 
                 <h3>HMI & SCADA</h3>
 
-                <p>
-                    WinCC Unified<br>
-                    Visualization Systems
-                </p>
+                <p>{t("Interfaces de operador y pantallas de supervisión con WinCC Unified para consultar estados y alarmas y controlar el proceso.", "Operator interfaces and supervisory screens built with WinCC Unified give teams access to machine status, alarms, and process controls.")}</p>
 
             </article>
 
@@ -126,12 +106,9 @@ import ScannerDemo from "./ScannerDemo.astro";
                     <circle cx="25.5" cy="20.5" r="1.35"/>
                 </svg>
 
-                <h3>Drives & Motion</h3>
+                <h3>{t("Variadores y control de movimiento", "Drives & Motion")}</h3>
 
-                <p>
-                    SINAMICS<br>
-                    Motion Control
-                </p>
+                <p>{t("Puesta en marcha de variadores SINAMICS y control de movimiento para aplicaciones que requieren regular la velocidad o coordinar varios ejes.", "SINAMICS drive commissioning and motion control for applications that require speed control or coordinated axis movement.")}</p>
 
             </article>
 
@@ -145,12 +122,10 @@ import ScannerDemo from "./ScannerDemo.astro";
                     <path d="M13.5 19v6m5-6v6M10 22h1m4.5 0h1m4.5 0h1"/>
                 </svg>
 
-                <h3>Demo Systems</h3>
+                <h3>{t("Sistemas integrados de demostración y laboratorios de automatización", "Integrated Demo Systems & Automation Labs")}</h3>
 
-                <p>
-                    Portable Training Equipment<br>
-                    Universities & Industry
-                </p>
+                <p>{t("Diseñamos estaciones para universidades e industria donde PLC, HMI, variadores, redes industriales y software de ingeniería trabajan juntos para controlar un proceso. Los participantes avanzan desde la configuración y programación básica hasta la integración, puesta en marcha y diagnóstico del sistema completo.", "Stations designed and built for universities and industry bring PLCs, HMIs, drives, industrial networks, and engineering software together to control a process. Participants progress from basic configuration and programming to full system integration, commissioning, and troubleshooting.")}</p>
+                <a class="service-demo-link" href="#showcase">{t("Ver una estación de capacitación →", "See a training station →")}</a>
 
             </article>
 
@@ -158,25 +133,24 @@ import ScannerDemo from "./ScannerDemo.astro";
 
                 <svg class="service-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M16 8C12 5 8 4 3 6v19c5-2 9-1 13 2 4-3 8-4 13-2V6c-5-2-9-1-13 2Zm0 0v19M7 11h5m-5 4h5m-5 4h5"/><path class="service-icon-accent" d="M20 19v-6h5v6m-5-3h5"/></svg>
 
-                <h3>Technical Training</h3>
+                <h3>{t("Capacitación y desarrollo de contenidos técnicos", "Training & Technical Content Development")}</h3>
 
-                <p>
-                    PLC · HMI · Drives · CNC
-                </p>
+                <p>{t("Detectamos necesidades de capacitación y desarrollamos cursos, prácticas, guías y manuales sobre tecnologías Siemens, adaptados a tus equipos, procesos y perfiles de trabajo.", "We assess training needs and develop Siemens-focused courses, hands-on exercises, guides, and manuals tailored to your equipment, processes, and team roles.")}</p>
+                <a class="service-demo-link" href="#training">{t("Ver capacitación técnica →", "Explore technical training →")}</a>
 
             </article>
 
             <article class="service-card">
                 <svg class="service-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M4 5v22h24M9 21l6-7 5 3 7-9"/><circle class="service-icon-accent" cx="27" cy="8" r="2"/></svg>
-                <h3>Industrial Data Collection</h3>
-                <p>Capture machine and process data for traceability and reporting.</p>
+                <h3>{t("Captura de datos industriales", "Industrial Data Collection")}</h3>
+                <p>{t("Captura datos de máquinas y procesos, como conteos de ciclos, alarmas y estados de operación, para trazabilidad, seguimiento de producción y reportes.", "Capture machine and process data, such as cycle counts, alarms, and operating states, for traceability, production monitoring, and reporting.")}</p>
             </article>
 
             <article class="service-card">
                 <svg class="service-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M13 24h6"/><path class="service-icon-accent" d="M12 12V9h3m5 3V9h-3m-5 5v3h3m5-3v3h-3"/></svg>
-                <h3>Industrial Apps</h3>
-                <p>Tools for equipment identification, field work and augmented reality guidance.</p>
-                <a class="service-demo-link" href="#scanner-demo">Try the scanner demo →</a>
+                <h3>{t("Aplicaciones industriales", "Industrial Apps")}</h3>
+                <p>{t("Aplicaciones para identificar equipos, consultar información técnica y recibir orientación con realidad aumentada directamente en campo.", "Apps for field teams to identify equipment, look up technical information, and get augmented reality guidance at the machine.")}</p>
+                <a class="service-demo-link" href="#scanner-demo">{t("Probar la demo del escáner →", "Try the scanner demo →")}</a>
             </article>
 
         </div>
@@ -188,35 +162,23 @@ import ScannerDemo from "./ScannerDemo.astro";
 
     <div class="container">
 
-        <span class="section-tag">
-            FEATURED PROJECTS
-        </span>
+        <span class="section-tag">{t("EJEMPLOS DE APLICACIÓN", "APPLICATION EXAMPLES")}</span>
 
-        <h2>
-            Automation Systems Designed & Built by AUSO
-        </h2>
+        <h2>{t("De los bancos didácticos a la modernización de maquinaria", "From Training Stations to Plant Retrofits")}</h2>
 
-        <p class="section-description">
-            From industrial automation to portable training equipment, every project
-            is engineered with reliability, scalability and Siemens best practices.
-        </p>
+        <p class="section-description">{t("Conoce cómo aplicamos controles Siemens en sistemas de demostración, capacitación técnica y modernización de equipos.", "Explore examples of how we apply Siemens controls in demonstration systems, technical training, and equipment modernization.")}</p>
+
+        <AusoCarousel lang={lang} />
 
         <div class="projects-grid">
 
             <article class="project-card">
 
-                <div class="project-image placeholder">
-                    DEMO PHOTO
-                </div>
-
                 <div class="project-content">
 
-                    <h3>S120 Motion Control Trainer</h3>
+                    <h3>{t("Banco de control de movimiento S120", "S120 Motion Control Trainer")}</h3>
 
-                    <p>
-                        Portable industrial trainer with synchronized servo axes,
-                        ET200SP distributed I/O and Siemens Motion Control.
-                    </p>
+                    <p>{t("Banco portátil con ejes servo sincronizados, E/S distribuidas ET200SP y control de movimiento Siemens.", "Portable industrial trainer with synchronized servo axes, ET200SP distributed I/O and Siemens Motion Control.")}</p>
 
                 </div>
 
@@ -224,18 +186,11 @@ import ScannerDemo from "./ScannerDemo.astro";
 
             <article class="project-card">
 
-                <div class="project-image placeholder">
-                    DEMO PHOTO
-                </div>
-
                 <div class="project-content">
 
-                    <h3>PLC Automation Cell</h3>
+                    <h3>{t("Celda de automatización con PLC", "PLC Automation Cell")}</h3>
 
-                    <p>
-                        Modular automation platform for PLC, HMI, Profinet
-                        and industrial communication training.
-                    </p>
+                    <p>{t("Plataforma modular para prácticas con PLC, HMI, PROFINET y comunicación industrial.", "Modular automation platform for PLC, HMI, Profinet and industrial communication training.")}</p>
 
                 </div>
 
@@ -243,18 +198,11 @@ import ScannerDemo from "./ScannerDemo.astro";
 
             <article class="project-card">
 
-                <div class="project-image placeholder">
-                    DEMO PHOTO
-                </div>
-
                 <div class="project-content">
 
-                    <h3>Industrial Retrofit</h3>
+                    <h3>{t("Modernización de maquinaria", "Industrial Retrofit")}</h3>
 
-                    <p>
-                        Modernization of legacy machinery using Siemens PLCs,
-                        WinCC Unified and variable speed drives.
-                    </p>
+                    <p>{t("Actualización de maquinaria existente con PLC Siemens, WinCC Unified y variadores de velocidad.", "Modernization of legacy machinery using Siemens PLCs, WinCC Unified and variable speed drives.")}</p>
 
                 </div>
 
@@ -262,43 +210,55 @@ import ScannerDemo from "./ScannerDemo.astro";
 
         </div>
 
-        <ScannerDemo />
+        <ScannerDemo lang={lang} />
     </div>
 
 </section>
-<section class="technologies" id="technologies">
+<section class="training" id="training">
 
     <div class="container">
 
-        <span class="section-tag">
-            TECHNOLOGIES
-        </span>
+        <span class="section-tag">{t("CAPACITACIÓN", "TRAINING")}</span>
 
-        <h2>
-            Technologies We Work With
-        </h2>
+        <h2>{t("Capacitación técnica industrial", "Professional Industrial Training")}</h2>
 
-        <p class="section-description">
-            Specialized in Siemens industrial automation platforms,
-            industrial communications and modern control technologies.
-        </p>
+        <p class="section-description">{t("Identificamos lo que necesitan aprender ingenieros, técnicos y estudiantes. Nuestros programas sobre tecnologías Siemens combinan cursos prácticos con ejercicios, guías y manuales para consultar después de la capacitación.", "We identify what engineers, technicians, and students need to learn and build training around their work. Our Siemens-focused programs combine practical courses with exercises, guides, and manuals that participants can refer to after training.")}</p>
 
-        <div class="tech-grid">
+        <div class="training-grid">
 
-            <div class="tech-card">TIA Portal</div>
-            <div class="tech-card">S7-1200</div>
-            <div class="tech-card">S7-1500</div>
-            <div class="tech-card">WinCC Unified</div>
-            <div class="tech-card">SINAMICS</div>
-            <div class="tech-card">SIMOTION</div>
-            <div class="tech-card">SINUMERIK</div>
-            <div class="tech-card">PROFINET</div>
-            <div class="tech-card">PROFIBUS</div>
-            <div class="tech-card">OPC UA</div>
-            <div class="tech-card">Modbus TCP</div>
-            <div class="tech-card">Industrial Ethernet</div>
+            <article class="course-card">
+                <h3>{t("Programación de PLC", "PLC Programming")}</h3>
+                <p>TIA Portal · S7-1200 / S7-1500<br>STEP 7 Classic · S7-300</p>
+            </article>
+
+            <article class="course-card">
+                <h3>WinCC Unified</h3>
+                <p>{t("Desarrollo de HMI y SCADA", "HMI & SCADA Development")}</p>
+            </article>
+
+            <article class="course-card">
+                <h3>{t("Control de movimiento", "Motion Control")}</h3>
+                <p>SINAMICS & SIMOTION</p>
+            </article>
+
+            <article class="course-card">
+                <h3>{t("Redes industriales", "Industrial Networks")}</h3>
+                <p>PROFINET · PROFIBUS · IO-Link<br>Modbus · OPC UA · MQTT</p>
+            </article>
+
+            <article class="course-card">
+                <h3>{t("Programación CNC", "CNC Programming")}</h3>
+                <p>SINUMERIK 840D sl · SINUMERIK ONE</p>
+            </article>
+
+            <article class="course-card">
+                <h3>{t("Capacitación a la medida", "Custom Training")}</h3>
+                <p>{t("Diseñada para tu empresa", "Designed for your company")}</p>
+            </article>
 
         </div>
+
+        <TechnologyMap lang={lang} />
 
     </div>
 
@@ -307,123 +267,25 @@ import ScannerDemo from "./ScannerDemo.astro";
 
     <div class="container">
 
-        <span class="section-tag">
-            WHY AUSO
-        </span>
+        <span class="section-tag">{t("POR QUÉ AUSO", "WHY AUSO")}</span>
 
-        <h2>
-            More Than Automation. Engineering Solutions.
-        </h2>
+        <h2>{t("Especialistas en Siemens para la industria y la educación", "Siemens Expertise for Industry and Education")}</h2>
 
-        <p class="section-description">
-            We combine industrial experience, Siemens technologies and practical
-            training to deliver reliable automation solutions for universities,
-            training centers and manufacturing industries.
-        </p>
-
-        <div class="stats-grid">
-
-            <div class="stat-card">
-                <span>15+</span>
-                <p>Years of Experience</p>
-            </div>
-
-            <div class="stat-card">
-                <span>200+</span>
-                <p>Engineers Trained</p>
-            </div>
-
-            <div class="stat-card">
-                <span>100+</span>
-                <p>Industrial Projects</p>
-            </div>
-
-            <div class="stat-card">
-                <span>Siemens</span>
-                <p>Technology Specialist</p>
-            </div>
-
-        </div>
+        <p class="section-description">{t("AUSO diseña sistemas de automatización y desarrolla capacitación para fabricantes y universidades. Colaboramos con nuestra empresa aliada Hitech Ingenium en proyectos con Siemens y universidades.", "AUSO is an industrial engineering company that designs automation systems and develops training for manufacturers and universities. Hitech Ingenium is an allied company that we collaborate with on projects involving Siemens and universities.")}</p>
 
         <div class="why-grid">
 
-            <div class="why-item">
-                ✓ Custom Automation Projects
-            </div>
+            <div class="why-item">{t("✓ Proyectos de automatización a la medida", "✓ Custom Automation Projects")}</div>
 
-            <div class="why-item">
-                ✓ Portable Training Equipment
-            </div>
+            <div class="why-item">{t("✓ Sistemas integrados de demostración y laboratorios universitarios", "✓ Integrated Demo Systems & University Labs")}</div>
 
-            <div class="why-item">
-                ✓ Motion Control Specialists
-            </div>
+            <div class="why-item">{t("✓ Especialistas en control de movimiento", "✓ Motion Control Specialists")}</div>
 
-            <div class="why-item">
-                ✓ Industrial Networks
-            </div>
+            <div class="why-item">{t("✓ Redes industriales", "✓ Industrial Networks")}</div>
 
-            <div class="why-item">
-                ✓ On-Site Technical Training
-            </div>
+            <div class="why-item">{t("✓ Capacitación técnica y materiales didácticos", "✓ Technical Training & Learning Materials")}</div>
 
-            <div class="why-item">
-                ✓ Technical Support
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-<section class="training" id="training">
-
-    <div class="container">
-
-        <span class="section-tag">
-            TRAINING
-        </span>
-
-        <h2>
-            Professional Industrial Training
-        </h2>
-
-        <p class="section-description">
-            Practical courses focused on real industrial applications using Siemens technologies.
-            Designed for engineers, technicians, universities and manufacturing companies.
-        </p>
-
-        <div class="training-grid">
-
-            <article class="course-card">
-                <h3>PLC Programming</h3>
-                <p>S7-1200 / S7-1500</p>
-            </article>
-
-            <article class="course-card">
-                <h3>WinCC Unified</h3>
-                <p>HMI & SCADA Development</p>
-            </article>
-
-            <article class="course-card">
-                <h3>Motion Control</h3>
-                <p>SINAMICS & SIMOTION</p>
-            </article>
-
-            <article class="course-card">
-                <h3>Industrial Networks</h3>
-                <p>PROFINET · PROFIBUS · OPC UA</p>
-            </article>
-
-            <article class="course-card">
-                <h3>CNC Programming</h3>
-                <p>SINUMERIK Systems</p>
-            </article>
-
-            <article class="course-card">
-                <h3>Custom Training</h3>
-                <p>Designed for your company</p>
-            </article>
+            <div class="why-item">{t("✓ Soporte técnico", "✓ Technical Support")}</div>
 
         </div>
 
@@ -436,29 +298,17 @@ import ScannerDemo from "./ScannerDemo.astro";
 
         <div class="contact-box">
 
-            <span class="section-tag">
-                CONTACT
-            </span>
+            <span class="section-tag">{t("CONTACTO", "CONTACT")}</span>
 
-            <h2>
-                Ready to Start Your Next Automation Project?
-            </h2>
+            <h2>{t("Cuéntanos qué necesitas construir o mejorar", "Tell Us What You Need to Build or Improve")}</h2>
 
-            <p>
-                Whether you need industrial automation, technical training,
-                Siemens engineering or portable demo systems, we'd love to
-                hear about your project.
-            </p>
+            <p>{t("Cuéntanos qué máquina necesitas integrar, qué laboratorio quieres equipar o qué habilidades debe desarrollar tu equipo. Para proyectos de software y datos, dinos qué tareas necesita resolver tu equipo en campo o qué quieres medir en producción.", "Tell us about the machine you need to integrate, the lab you want to equip, or the skills your team needs to develop. For software and data projects, tell us what your team needs to do in the field or track in production.")}</p>
 
             <div class="contact-buttons">
 
-                <a href="#" class="btn btn-primary">
-                    Contact Us
-                </a>
+                <a href="mailto:contact@ausoautomation.com" class="btn btn-primary">{t("Contáctanos", "Contact Us")}</a>
 
-                <a href="#" class="btn btn-outline">
-                    View Projects
-                </a>
+                <a href="#projects" class="btn btn-outline">{t("Ver ejemplos de aplicación", "See Application Examples")}</a>
 
             </div>
 
@@ -480,23 +330,21 @@ import ScannerDemo from "./ScannerDemo.astro";
                 class="footer-logo"
             >
 
-            <p>
-                Industrial Automation Solutions focused on Siemens technologies,
-                Motion Control, Drives, CNC and Technical Training.
-            </p>
+            <p>{t("Ingeniería industrial especializada en Siemens, con sede en Monterrey, México.", "Industrial engineering with Siemens expertise, based in Monterrey, Mexico.")}</p>
 
         </div>
 
         <div>
 
-            <h4>Services</h4>
+            <h4>{t("Servicios", "Services")}</h4>
 
             <ul>
 
-                <li>Automation</li>
-                <li>Training</li>
-                <li>Engineering</li>
-                <li>Motion Control</li>
+                <li>{t("Automatización e integración de sistemas", "Automation & Systems Integration")}</li>
+                <li>{t("Sistemas de demostración y laboratorios de automatización", "Demo Systems & Automation Labs")}</li>
+                <li>{t("Capacitación y contenidos técnicos", "Training & Technical Content")}</li>
+                <li>{t("Aplicaciones industriales", "Industrial Apps")}</li>
+                <li>{t("Captura de datos industriales", "Industrial Data Collection")}</li>
 
             </ul>
 
@@ -504,13 +352,13 @@ import ScannerDemo from "./ScannerDemo.astro";
 
         <div>
 
-            <h4>Technologies</h4>
+            <h4>{t("Tecnologías", "Technologies")}</h4>
 
             <ul>
 
                 <li>PLC</li>
                 <li>HMI</li>
-                <li>Drives</li>
+                <li>{t("Variadores", "Drives")}</li>
                 <li>CNC</li>
 
             </ul>
@@ -519,7 +367,7 @@ import ScannerDemo from "./ScannerDemo.astro";
 
         <div>
 
-            <h4>Contact</h4>
+            <h4>{t("Contacto", "Contact")}</h4>
 
             <ul>
 

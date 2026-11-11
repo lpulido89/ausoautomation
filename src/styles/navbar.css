@@ -166,7 +166,29 @@
 
 }
 
-@media (max-width:950px){
+.nav-actions, .language-switch{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.language-switch{
+    gap:5px;
+    font-size:.8rem;
+    white-space:nowrap;
+}
+
+.language-switch a[aria-current="page"]{
+    font-weight:800;
+    text-decoration:underline;
+    text-underline-offset:4px;
+}
+
+.mobile-contact{
+    display:none;
+}
+
+@media (max-width:1150px){
 
     .nav-content{
 
@@ -186,10 +208,14 @@
 
     }
 
-    .btn.btn-outline{
+    .nav-contact{
 
         display:none;
 
+    }
+
+    .mobile-contact{
+        display:block;
     }
 
     .menu-toggle{
@@ -229,6 +255,9 @@
         opacity:0;
 
         pointer-events:none;
+        visibility:hidden;
+        max-height:calc(100dvh - 72px);
+        overflow:auto;
 
         transition:.35s;
 
@@ -243,6 +272,7 @@
         opacity:1;
 
         pointer-events:auto;
+        visibility:visible;
 
     }
 

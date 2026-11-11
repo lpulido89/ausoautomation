@@ -3,14 +3,6 @@
 
     position:relative;
 
-    min-height:calc(100vh - 90px);
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
     overflow:hidden;
 
     background:
@@ -54,9 +46,9 @@
 
     text-align:center;
 
-    padding-top:clamp(60px,8vw,140px);
+    padding-top:clamp(104px,9vw,132px);
 
-    padding-bottom:clamp(30px,5vw,80px);
+    padding-bottom:clamp(24px,3vw,42px);
 
 }
 
@@ -126,7 +118,7 @@
 
 .service{
 
-    padding:38px 24px;
+    padding:clamp(16px,2vw,26px) 16px;
 
     text-align:center;
 
