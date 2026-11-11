@@ -163,7 +163,7 @@ html[lang="en"] .hero h1{
 
     .services-bar{
 
-        grid-template-columns:1fr;
+        display:none;
 
     }
 .nav-content{
