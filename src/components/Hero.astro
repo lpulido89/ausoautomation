@@ -1,5 +1,6 @@
 ---
 import AusoCarousel from "./AusoCarousel.astro";
+import ScannerDemo from "./ScannerDemo.astro";
 ---
 
 <section class="hero" id="top">
@@ -165,6 +166,19 @@ import AusoCarousel from "./AusoCarousel.astro";
 
             </article>
 
+            <article class="service-card">
+                <svg class="service-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M4 5v22h24M9 21l6-7 5 3 7-9"/><circle class="service-icon-accent" cx="27" cy="8" r="2"/></svg>
+                <h3>Industrial Data Collection</h3>
+                <p>Capture machine and process data for traceability and reporting.</p>
+            </article>
+
+            <article class="service-card">
+                <svg class="service-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect x="8" y="3" width="16" height="26" rx="3"/><path d="M13 24h6"/><path class="service-icon-accent" d="M12 12V9h3m5 3V9h-3m-5 5v3h3m5-3v3h-3"/></svg>
+                <h3>Industrial Apps</h3>
+                <p>Tools for equipment identification, field work and augmented reality guidance.</p>
+                <a class="service-demo-link" href="#scanner-demo">Try the scanner demo →</a>
+            </article>
+
         </div>
 
     </div>
@@ -248,6 +262,7 @@ import AusoCarousel from "./AusoCarousel.astro";
 
         </div>
 
+        <ScannerDemo />
     </div>
 
 </section>

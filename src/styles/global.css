@@ -272,7 +272,7 @@ section{
 
     display:grid;
 
-    grid-template-columns:repeat(5,1fr);
+    grid-template-columns:repeat(4,minmax(0,1fr));
 
     gap:24px;
 
@@ -356,6 +356,13 @@ section{
     .service-card:hover .service-icon{
         transform:none;
     }
+}
+
+.service-demo-link{
+    display:inline-block;
+    margin-top:12px;
+    color:#ff8996;
+    text-decoration:underline;
 }
 
 .service-card h3{

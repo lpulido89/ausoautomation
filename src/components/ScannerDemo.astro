@@ -1,0 +1,76 @@
+<article class="scanner" id="scanner-demo" aria-labelledby="scanner-title">
+  <div class="scanner-copy">
+    <p class="section-tag">INTERACTIVE DEMO</p>
+    <h3 id="scanner-title">AUSO Industrial Scanner</h3>
+    <p>Identify a training station, capture a sample record, and explore its components through a simulated augmented reality overlay.</p>
+    <p class="scanner-note">Simulation · Sample data · No camera required</p>
+    <div class="scanner-actions">
+      <button type="button" class="btn btn-primary" data-scan>Simulate scan</button>
+      <button type="button" class="btn btn-outline" data-overlay aria-pressed="false" aria-controls="scanner-overlay" disabled>Show AR overlay</button>
+    </div>
+    <dl class="scanner-record" hidden>
+      <div><dt>Asset ID</dt><dd>AUSO-DEMO-01</dd></div>
+      <div><dt>Location</dt><dd>Training lab</dd></div>
+      <div><dt>Result</dt><dd>Station identified</dd></div>
+    </dl>
+    <p class="scanner-status" role="status"></p>
+    <a href="#contact">Talk to us about your application →</a>
+  </div>
+  <figure class="scanner-figure">
+    <img src="/images/auso-scanner-demo.png" width="1672" height="941" loading="lazy" decoding="async" alt="AUSO training rack with an operator screen and industrial control modules" />
+    <div id="scanner-overlay" class="scanner-overlay" hidden>
+      <span class="scanner-label hmi">HMI</span>
+      <span class="scanner-label plc">PLC &amp; I/O</span>
+      <span class="scanner-label drive">Drive</span>
+    </div>
+  </figure>
+</article>
+
+<script>
+  const demo = document.querySelector('#scanner-demo');
+  const scan = demo?.querySelector<HTMLButtonElement>('[data-scan]');
+  const overlayButton = demo?.querySelector<HTMLButtonElement>('[data-overlay]');
+  const overlay = demo?.querySelector<HTMLElement>('#scanner-overlay');
+  const record = demo?.querySelector<HTMLElement>('.scanner-record');
+  const status = demo?.querySelector('.scanner-status');
+  if (scan && overlayButton && overlay && record && status) {
+    scan.addEventListener('click', () => {
+      const reset = !record.hidden;
+      record.hidden = reset;
+      overlay.hidden = true;
+      overlayButton.disabled = reset;
+      overlayButton.setAttribute('aria-pressed', 'false');
+      scan.textContent = reset ? 'Simulate scan' : 'Reset demo';
+      status.textContent = reset ? 'Demo reset.' : 'Sample scan complete. Asset AUSO-DEMO-01 identified.';
+    });
+    overlayButton.addEventListener('click', () => {
+      overlay.hidden = !overlay.hidden;
+      overlayButton.setAttribute('aria-pressed', String(!overlay.hidden));
+      status.textContent = overlay.hidden ? 'AR overlay hidden.' : 'AR overlay visible: HMI, PLC and I/O, and drive.';
+    });
+  }
+</script>
+
+<style>
+  .scanner { scroll-margin-top:90px; display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1.2fr); gap:clamp(20px,4vw,48px); align-items:center; margin-top:3rem; padding:clamp(20px,4vw,42px); border:1px solid #303643; border-radius:18px; background:#12151b; }
+  .scanner h3 { color:#fff; font-size:clamp(1.5rem,3vw,2.3rem); margin-bottom:1rem; }
+  .scanner-copy > p:not(.section-tag) { color:#b9c2ce; }
+  .scanner-note { font-size:.85rem; margin-top:1rem; }
+  .scanner-actions { display:flex; flex-wrap:wrap; gap:.7rem; margin-block:1.25rem; }
+  .scanner-actions .btn { display:inline-flex; align-items:center; font:inherit; padding:.65rem 1rem; }
+  .scanner-actions button:disabled { opacity:.5; cursor:not-allowed; }
+  .scanner-copy > a { color:#ff8996; }
+  .scanner-record:not([hidden]) { display:grid; gap:.45rem; margin-bottom:1rem; }
+  .scanner-record div { display:flex; flex-wrap:wrap; gap:.5rem; }
+  .scanner-record dt { color:#b9c2ce; }
+  .scanner-record dd { color:#fff; }
+  .scanner-status:not(:empty) { margin-bottom:1rem; }
+  .scanner-figure { position:relative; margin:0; }
+  .scanner-figure img { display:block; width:100%; height:auto; border-radius:12px; }
+  .scanner-overlay { position:absolute; inset:0; }
+  .scanner-label { position:absolute; color:#fff; background:#131923; border:1px solid #ff8996; border-radius:5px; padding:.2rem .4rem; font-size:clamp(.68rem,1.3vw,.85rem); transform:translate(-50%, -50%); white-space:nowrap; }
+  .scanner-label.hmi { left:47%; top:37%; }
+  .scanner-label.plc { left:49%; top:69%; }
+  .scanner-label.drive { left:60%; top:75%; }
+  @media(max-width:800px) { .scanner { grid-template-columns:1fr; } }
+</style>
