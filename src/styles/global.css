@@ -880,6 +880,10 @@ section{
 
     display:flex;
 
+    flex-wrap:wrap;
+
+    align-items:center;
+
     justify-content:center;
 
     gap:20px;
@@ -902,9 +906,9 @@ section{
 
     display:grid;
 
-    grid-template-columns:2fr 1fr 1fr 1fr;
+    grid-template-columns:1fr 1fr;
 
-    gap:50px;
+    gap:clamp(24px,5vw,70px);
 
 }
 
@@ -932,6 +936,16 @@ section{
 
     color:#9ca3ad;
 
+}
+
+.footer-address{
+    font-style:normal;
+    line-height:1.55;
+}
+
+.footer a[href^="tel:"]:is(:hover, :focus-visible){
+    color:#fff;
+    text-decoration:underline;
 }
 
 .footer p{

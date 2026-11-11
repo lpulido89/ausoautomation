@@ -1,10 +1,13 @@
 ---
 import AusoCarousel from "./AusoCarousel.astro";
+import ContactForm from "./ContactForm.astro";
 import ScannerDemo from "./ScannerDemo.astro";
 import TechnologyMap from "./TechnologyMap.astro";
 
 const { lang } = Astro.props;
 const t = (es: string, en: string) => lang === "es" ? es : en;
+const whatsappMessage = t("Hola, me gustaría conocer más sobre los servicios de AUSO.", "Hi, I'd like to learn more about AUSO's services.");
+const whatsappUrl = `https://wa.me/528115635310?text=${encodeURIComponent(whatsappMessage)}`;
 ---
 
 <section class="hero" id="top">
@@ -305,12 +308,13 @@ const t = (es: string, en: string) => lang === "es" ? es : en;
             <p>{t("Cuéntanos qué máquina necesitas integrar, qué laboratorio quieres equipar o qué habilidades debe desarrollar tu equipo. Para proyectos de software y datos, dinos qué tareas necesita resolver tu equipo en campo o qué quieres medir en producción.", "Tell us about the machine you need to integrate, the lab you want to equip, or the skills your team needs to develop. For software and data projects, tell us what your team needs to do in the field or track in production.")}</p>
 
             <div class="contact-buttons">
-
-                <a href="mailto:contact@ausoautomation.com" class="btn btn-primary">{t("Contáctanos", "Contact Us")}</a>
-
-                <a href="#projects" class="btn btn-outline">{t("Ver ejemplos de aplicación", "See Application Examples")}</a>
-
+                <a href={whatsappUrl} class="btn btn-primary">
+                    {t("Escríbenos por WhatsApp", "Message us on WhatsApp")}
+                </a>
+                <span>contact@ausoautomation.com</span>
             </div>
+
+            <ContactForm lang={lang} />
 
         </div>
 
@@ -336,43 +340,17 @@ const t = (es: string, en: string) => lang === "es" ? es : en;
 
         <div>
 
-            <h4>{t("Servicios", "Services")}</h4>
-
-            <ul>
-
-                <li>{t("Automatización e integración de sistemas", "Automation & Systems Integration")}</li>
-                <li>{t("Sistemas de demostración y laboratorios de automatización", "Demo Systems & Automation Labs")}</li>
-                <li>{t("Capacitación y contenidos técnicos", "Training & Technical Content")}</li>
-                <li>{t("Aplicaciones industriales", "Industrial Apps")}</li>
-                <li>{t("Captura de datos industriales", "Industrial Data Collection")}</li>
-
-            </ul>
-
-        </div>
-
-        <div>
-
-            <h4>{t("Tecnologías", "Technologies")}</h4>
-
-            <ul>
-
-                <li>PLC</li>
-                <li>HMI</li>
-                <li>{t("Variadores", "Drives")}</li>
-                <li>CNC</li>
-
-            </ul>
-
-        </div>
-
-        <div>
-
             <h4>{t("Contacto", "Contact")}</h4>
 
             <ul>
 
-                <li>contact@ausoautomation.com</li>
-                <li>Monterrey, México</li>
+                <li>
+                    <address class="footer-address">
+                        <strong>{t("Ubicación de Hitech Ingenium", "Hitech Ingenium location")}</strong><br>
+                        Humberto Lobo #520, local E-9<br>
+                        Col. del Valle, San Pedro Garza García, {t("México", "Mexico")}
+                    </address>
+                </li>
 
             </ul>
 
