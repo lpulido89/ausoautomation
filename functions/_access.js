@@ -1,3 +1,5 @@
+export const AUSO_ADMIN_EMAIL = 'leonardo.pulido89@gmail.com';
+
 function decodeB64Url(value) {
   const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
   const raw = atob(normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '='));

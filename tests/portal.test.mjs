@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
+import { AUSO_ADMIN_EMAIL } from '../functions/_access.js';
 import { onRequestPost } from '../functions/api/admin/materials.js';
 import { onRequestGet as courses } from '../functions/api/portal/courses.js';
 import { onRequestGet as download } from '../functions/api/portal/download/[id].js';
@@ -81,6 +82,7 @@ test('admin can create courses, upload and assign materials; each client can onl
   ]) {
     const data = {clientEmail};
     const list = await (await courses({env,data})).json();
+    assert.equal(list.isAdmin, false);
     assert.deepEqual(list.courses.map(item => [item.title, item.files[0].id]), [[title,allowed.id]]);
     const before = reads.length;
     assert.equal((await download({env,data,params:{id:denied.id}})).status, 404);
@@ -90,6 +92,9 @@ test('admin can create courses, upload and assign materials; each client can onl
     assert.match(response.headers.get('Content-Disposition'), /attachment/);
     assert.equal(await response.text(), filename);
   }
+  const adminView = await courses({env,data:{clientEmail:AUSO_ADMIN_EMAIL}});
+  assert.equal(adminView.headers.get('Cache-Control'), 'private, no-store');
+  assert.deepEqual(await adminView.json(), { courses: [], isAdmin: true });
   assert.equal((await send({action:'revoke',course:plc.course,email:alice})).status, 200);
   assert.equal((await download({env,data:{clientEmail:alice},params:{id:plc.id}})).status, 404);
   const group = { action:'assign-batch', courses:[plc.course], emails:[alice, bob, bob.toUpperCase()] };

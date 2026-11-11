@@ -1,9 +1,8 @@
-import { verifyAccessJwt } from '../../_access.js';
+import { AUSO_ADMIN_EMAIL, verifyAccessJwt } from '../../_access.js';
 
 /* AUSO administrator account: ONLY this identity may make admin API requests.
    Cloudflare Access must additionally protect both /admin/* and /api/admin/*.
    Do not reuse this identity gate for future Client Portal users. */
-const AUSO_ADMIN_EMAIL = 'leonardo.pulido89@gmail.com';
 export async function onRequest(context) {
   const auth = await verifyAccessJwt(context.request, context.env);
   const headers = { 'Cache-Control': 'no-store' };

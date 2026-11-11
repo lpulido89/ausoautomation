@@ -1,3 +1,4 @@
+import { AUSO_ADMIN_EMAIL } from '../../_access.js';
 import { json, listClientCourses } from '../../_portal.js';
 
 export async function onRequestGet({ env, data }) {
@@ -7,5 +8,5 @@ export async function onRequestGet({ env, data }) {
     if (!courses.has(row.course_id)) courses.set(row.course_id, { title: row.title, files: [] });
     if (row.material_id) courses.get(row.course_id).files.push({ id: row.material_id, name: row.filename, size: row.size });
   }
-  return json({ courses: [...courses.values()] });
+  return json({ courses: [...courses.values()], isAdmin: data.clientEmail === AUSO_ADMIN_EMAIL });
 }

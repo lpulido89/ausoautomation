@@ -10,7 +10,6 @@
     <main>
       <nav class="portal-nav" aria-label="Navegación del portal">
         <a href="/">← AUSO</a>
-        <a class="admin-link" href="/admin/">Panel de administración</a>
       </nav>
       <h1>Mis descargas</h1>
       <p>Abre una carpeta para ver sus archivos.</p>
@@ -20,11 +19,19 @@
     <script>
       const status = document.querySelector('#status');
       const container = document.querySelector('#courses');
-      if (status && container) {
+      const navigation = document.querySelector('.portal-nav');
+      if (status && container && navigation) {
         try {
           const response = await fetch('/api/portal/courses');
           const result = await response.json();
           if (!response.ok) throw new Error(result.error);
+          if (result.isAdmin === true) {
+            const adminLink = document.createElement('a');
+            adminLink.className = 'admin-link';
+            adminLink.href = '/admin/';
+            adminLink.textContent = 'Panel de administración';
+            navigation.append(adminLink);
+          }
           status.textContent = result.courses.length ? '' : 'Todavía no tienes carpetas compartidas.';
           for (const course of result.courses) {
             const section = document.createElement('details');
@@ -51,9 +58,9 @@
       main { max-width:54rem; margin:auto; padding:3rem 1.25rem; }
       a { color:#ff8996; overflow-wrap:anywhere; }
       .portal-nav { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
-      .admin-link { padding:.55rem .8rem; border:1px solid #ff8996; border-radius:8px; text-decoration:none; }
-      .admin-link:hover { background:#2c2229; }
-      .admin-link:focus-visible { outline:2px solid currentColor; outline-offset:3px; }
+      .portal-nav :global(.admin-link) { color:#ff8996; padding:.55rem .8rem; border:1px solid #ff8996; border-radius:8px; text-decoration:none; }
+      .portal-nav :global(.admin-link:hover) { background:#2c2229; }
+      .portal-nav :global(.admin-link:focus-visible) { outline:2px solid currentColor; outline-offset:3px; }
       #courses :global(details) { background:#191d24; padding:1.25rem; border:1px solid #363b44; border-radius:12px; margin-top:1rem; }
       #courses :global(summary) { cursor:pointer; font-weight:700; }
       #courses :global(a) { display:block; padding:.45rem 0; color:#ff8996; overflow-wrap:anywhere; }
