@@ -112,6 +112,20 @@ button{
 
 }
 
+.btn-whatsapp{
+    background:#25d366;
+    color:#102219;
+}
+
+.btn-whatsapp:hover{
+    background:#43df7c;
+}
+
+.btn-whatsapp:focus-visible{
+    outline:2px solid #fff;
+    outline-offset:3px;
+}
+
 .btn-outline{
 
     border:1px solid rgba(255,255,255,.35);

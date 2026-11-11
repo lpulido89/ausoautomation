@@ -8,7 +8,10 @@
   </head>
   <body>
     <main>
-      <a href="/">← AUSO</a>
+      <nav class="portal-nav" aria-label="Navegación del portal">
+        <a href="/">← AUSO</a>
+        <a class="admin-link" href="/admin/">Panel de administración</a>
+      </nav>
       <h1>Mis descargas</h1>
       <p>Abre una carpeta para ver sus archivos.</p>
       <p id="status" role="status">Cargando tus carpetas…</p>
@@ -47,6 +50,10 @@
       :global(body) { background:#101216; color:#f3f4f6; font:1rem system-ui; margin:0; }
       main { max-width:54rem; margin:auto; padding:3rem 1.25rem; }
       a { color:#ff8996; overflow-wrap:anywhere; }
+      .portal-nav { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+      .admin-link { padding:.55rem .8rem; border:1px solid #ff8996; border-radius:8px; text-decoration:none; }
+      .admin-link:hover { background:#2c2229; }
+      .admin-link:focus-visible { outline:2px solid currentColor; outline-offset:3px; }
       #courses :global(details) { background:#191d24; padding:1.25rem; border:1px solid #363b44; border-radius:12px; margin-top:1rem; }
       #courses :global(summary) { cursor:pointer; font-weight:700; }
       #courses :global(a) { display:block; padding:.45rem 0; color:#ff8996; overflow-wrap:anywhere; }
